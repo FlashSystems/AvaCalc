@@ -1,3 +1,5 @@
+var gui = undefined;
+
 $(document).ready( function() {
-	gui.onInit();
+	gui = new Gui();
 });

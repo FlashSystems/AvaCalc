@@ -2,57 +2,238 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>title</title>
+	<title>FlashSysteme Availablity Calculator</title>
 	<link rel="stylesheet" href="css/material-icons.css">
 	<link rel="stylesheet" href="css/materialize.min.css">
 	<link rel="stylesheet" href="css/main.css">
 	<script src="js/libs/jquery-3.2.1.min.js"></script>
-	<script src="js/libs/jquery-3.2.1.min.js"></script>
+	<script src="js/libs/jquery.savefile.js"></script>
+	<script src="js/libs/oolib.min.js"></script>
 	<script src="js/libs/materialize.min.js"></script>
 	<script src="js/libs/cytoscape.min.js"></script>
+	<script src="js/libs/cytoscape-snap-to-grid.js"></script>
+	<script src="js/libs/fraction.min.js"></script>
+	<script src="js/tools.js"></script>
+	<script src="js/events.js"></script>
+	<script src="js/cy.js"></script>
+	<script src="js/popup.js"></script>
 	<script src="js/gui.js"></script>
+	<script src="js/ava.js"></script>
+	<script src="js/simhandler.js"></script>
 	<script src="js/main.js"></script>
 </head>
 <body>
+	<!-- Dialog "AddDevice" -->
+	<div id="dlgEditDevice" class="modal modal-fixed-footer">
+		<div class="modal-content">
+			<h4>Add device<i class="material-icons">storage</i></h4>
+			<form class="col s12">
+				<div class="row">
+					<div class="col s12">
+						Clicking "add" will create a new device. Please enter the name of the new device below.
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s6">
+						<input placeholder="Server 1 " id="deviceName" data-link="name" type="text" class="validate autocomplete allowenter autofocus" autocomplete="off" required="on">
+						<label for="deviceName">Device name</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col s6">
+						<div class="input-field inline">
+							<input placeholder="99.6" id="availability" type="number" data-link="availability" min="0" max="100" step="0.01" class="validate allowenter" required="required" pattern="[0-9]+[.,][0-9]+" required="on">
+							<label for="availability" data-error="Please enter a percentage value.">Availability</label>
+						</div>
+						%
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<a class="modal-action waves-effect waves-green btn-flat btn-ok">Save</a>
+			<a class="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+		</div>
+	</div>
+
+	<!-- Dialog "AddService" -->
+	<div id="dlgEditService" class="modal modal-fixed-footer">
+		<div class="modal-content">
+			<h4>Add service<i class="material-icons">settings</i></h4>
+			<form class="col s12">
+				<div class="row">
+					<div class="col s12">
+					Clicking "add" will create a new service hat is provided by the selected device. Please enter the name of the new service below.
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s6">
+						<input placeholder="Webserver" id="serviceName" type="text" data-link="name" class="validate allowenter autocomplete autofocus" autocomplete="off" required="on">
+						<label for="serviceName">Service name</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col s6">
+						<div class="input-field inline">
+							<input placeholder="100" id="capacity" type="number" data-link="capacity" min="0" max="100" step="1" class="validate allowenter" required="required" pattern="[0-9]+" required="on">
+							<label for="capacity" data-error="Please enter a percentage value.">Capacity</label>
+						</div>
+						%
+					</div>
+					<div class="row">						
+						<div class="col s12 information">
+							The capacity defines the load handling capability of a service. If three services have a capacity of 50%, two of them must be available for the service to be considered available. If you set the capacity to 34% all three services must be available all the time for the service to be available. It is allowed (and common) for services to have an over all capacity of more that 100%.
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<a class="modal-action waves-effect waves-green btn-flat btn-ok">Save</a>
+			<a class="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+		</div>
+	</div>
+
+	<!-- Dialog "Clear" -->
+	<div id="dlgClear" class="modal">
+		<div class="modal-content">
+			<h4>Clear current design?</h4>
+			<p>This will clear the current design and leave you with an empty workspace to start a new one.</p>
+			<p>Are you sure you want to start over and lose all unsaved work?</p>
+		</div>
+		<div class="modal-footer">
+			<a class="modal-action modal-close waves-effect waves-green btn-flat" id="btnClear">I want to start over</a>
+			<a class="modal-action modal-close waves-effect waves-green btn-flat">Keep my work</a>
+		</div>
+	</div>
+
+	<!-- Dialog "About" -->
+	<div id="dlgAbout" class="modal modal-fixed-footer">
+		<div class="modal-content">
+			<h4>Flash&nbsp;Systems Availability Calculator</h4>
+			<p id="version">Version 0.5</p>
+			<img class="logo" src="images/flashlogo.svg" alt="Flash Systems logo"/>
+			<p>Developed by Daniel Goß 2017</p>			
+			<p>Licensed under the <a href="http://www.gnu.de/documents/gpl.en.html">GPL v3</a>.</p>
+			<h5>Privacy</h5>
+			<p>This is a JavaScript application. All data processing occures localy. No information about your design or the executed operations is transmitted back to Flash&nbsp;Systems. To be extra sure you can inspect the source code on <a href="github">GitHub</a>.</p>
+			<h5>Code and Bugs</h5>
+			<p>If you want to get the source code of this application, submit a pull request or report a bug just jump over to <a href="asdf">GitHub</a></p>
+			<h5>Credits</h5>
+			<p>This software uses the following modules supplied by other people or organisations:</p>
+			<ul id="credits" class="icons">
+				<li class="credit"><a href="https://jquery.com/">jQuery</a><p>write less, do more<p/><p class="license">MIT license</p></li>
+				<li class="credit"><a href="http://js.cytoscape.org/">cytoscape.js</a><p>Network Data Integration, Analysis, and Visualization in a Box.<p/><p class="license">MIT license</p></li>
+				<li class="credit"><a href="http://materializecss.com/">Materialize CSS</a><p>A modern responsive front-end framework based on Material Design.</p><p class="license">MIT license</p></li>
+				<li class="credit"><a href="https://github.com/infusion/Fraction.js/">fraction.js</a><p>ℚ in JavaSript<p/><p class="license">MIT license</p></li>
+				<li class="credit"><a href="https://idya.github.io/oolib/">oolib.js</a><p>The JavaScript OOP library</p><p class="license">MIT license</p></li>
+				<li class="credit"><a href="https://github.com/joshmcarthur/jquery.savefile">jQuery.savefile.js</a><p>A simple jQuery interface to SaveFile, making it easier to download files from Javascript.</p><p class="license">propriatery (MIT like)</p></li>
+			</ul>
+		</div>
+		<div class="modal-footer">
+			<a class="modal-action modal-close waves-effect waves-green btn-flat">Dismiss</a>
+		</div>
+	</div>
+
+	<!-- Simulation result dialog -->
+	<div id="simResult" class="modal modal-fixed-footer">
+		<div class="modal-content">
+			<h4>Simulation result</h4>
+			<ul id="simResultTabs" class="tabs">
+				<li class="tab col s2"><a class="active" href="#simResultAva">Availability</a></li>
+				<li class="tab col s2"><a href="#simResultSpof">Single point of failure</a></li>
+			</ul>
+			<div id="simResultAva" class="col s12">
+				<p>The simulation completed successfully. The different failure modes of your design have been iterated and the probability of all solutions that resulted in a working configuration were accumulated.</p>
+				<ul class="icons">
+					<li class="time">The simulation took <span id="simDuration"></span> to complete.</li>
+					<li class="simResult vcenter"><span>The statistical availability of this design is </span><span class="importantValue" id="simAva"></span><span class="importantValue">%</span></li>
+					<li class="warning vcenter" id="simSpofLine"><span>The simulation revealed </span><span class="importantValue" id="simSpofCount"></span><span class="importantValue"> single points of failure.</span> Please open the &quot;single point of failure&quot; tab for more information.</span></li>
+				</ul>
+				<p>This yields the following allowed downtimes for differnet service times:</p>
+				<table class="striped">
+					<thead>
+						<tr>
+							<th></th>
+							<th>7x24</th>
+							<th>8x10</th>
+							<th>6x8</th>
+							<th>5x8</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>per Year</td>
+							<td id="ava7x24w52">-</td>
+							<td id="ava5x10w52">-</td>
+							<td id="ava6x8w52">-</td>
+							<td id="ava5x8w52">-</td>						
+						</tr>
+						<tr>
+							<td>per Month</td>
+							<td id="ava7x24w4">-</td>
+							<td id="ava5x10w4">-</td>
+							<td id="ava6x8w4">-</td>
+							<td id="ava5x8w4">-</td>						
+						</tr>
+						<tr>
+							<td>per Week</td>
+							<td id="ava7x24w1">-</td>
+							<td id="ava5x10w1">-</td>
+							<td id="ava6x8w1">-</td>
+							<td id="ava5x8w1">-</td>						
+						</tr>
+					</tbody>
+				</table>				
+			</div>
+			<div id="simResultSpof" class="col s12">
+				<p>The simulation revealed the following single points of failure:</p>
+				<ul id="spofs" class="icons">
+				</ul>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+		</div>
+	</div>
+
 	<!-- Dropdown Structure -->
 	<ul id="dropdown1" class="dropdown-content">
-		<li><a href="javascript:gui.onAddDevice()">Device</a></li>
-		<li><a href="#!">two</a></li>
-		<li class="divider"></li>
-		<li><a href="#!">three</a></li>
+		<li><a id="addDevice"><i class="material-icons">storage</i>Device</a></li>
+		<li><a id="addService"><i class="material-icons">settings</i>Service</a></li>
 	</ul>
 
 	<!-- Navigation bar -->
 	<nav>
-		<div class="nav-wrapper">
-			<a href="#!" class="brand-logo">Logo</a>
-			<ul class="right hide-on-med-and-down">
-				<li><a href="sass.html">Sass</a></li>				
-				<!-- Dropdown Trigger -->
-				<li><a class="dropdown-button" href="#!" data-activates="dropdown1"><i class="material-icons">add</i></a></li>
-				<li><a href="badges.html">Components</a></li>
+		<div class="nav-wrapper blue-grey">
+			<span class="left brand-logo avac-logo">Availability Calculator</span>
+			<ul class="right">
+				<li><a id="menuSimulateStart" class="tooltipped" data-tooltip="Start simulation"><i class="material-icons">play_arrow</i></a></li>
+				<li class="hidden"><a id="menuSimulateStop" class="tooltipped" data-tooltip="Stop simulation"><i class="material-icons">stop</i></a></li>
+				<li><a class="dropdown-button tooltipped" data-tooltip="Add a new element" data-activates="dropdown1"><i class="material-icons">add</i></a></li>
+				<li><a id="menuResetZoom" class="tooltipped" data-tooltip="Reset zoom and position"><i class="material-icons">find_replace</i></a></li>
+				<li><a id="menuSave" class="tooltipped" data-tooltip="Save the current design"><i class="material-icons">save</i></a></li>
+				<li><a id="menuLoad" class="tooltipped" data-tooltip="Open a saved design" data-position="left"><i class="material-icons">open_in_browser</i></a></li>
+				<li><a id="menuClear" href="#dlgClear" class="tooltipped modal-trigger" data-tooltip="Create a new, empty design" data-position="left"><i class="material-icons">delete</i></a></li>
+				<li><a id="menuAbout" href="#dlgAbout" class="tooltipped modal-trigger" data-tooltip="About this website" data-position="left"><i class="material-icons">info_outline</i></a></li>				
 			</ul>
 		</div>
 	</nav>
 
-	<!-- Info slideout -->
-	<ul id="slide-out" class="side-nav">
-		<li>
-			<div class="user-view">
-				<!--<div class="background">
-					<img src="images/office.jpg">
-				</div>-->
-			</div>
-		</li>
-		<li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
-		<li><a href="#!">Second Link</a></li>
-		<li><div class="divider"></div></li>
-		<li><a class="subheader">Subheader</a></li>
-		<li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
-	</ul>
-
 	<!-- Cytoscape container -->
 	<div class="cycanvas" id="cycanvas">
+	</div>
+
+	<!-- Progress indicator -->
+	<div class="progressInfo" id="simProgress">
+		<p class="vcenter"><span class="material-icons">directions_run</span><span>Simulation running...</span></p>
+		<div class="progress">
+			<div class="determinate" id="progressBar" style="width: 0%"></div>
+		</div>
+	</div>
+
+	<div class="plumbing">
+		<input type="file" id="loadFile" accept=".avac"/>
 	</div>
 </body>
 </html>
