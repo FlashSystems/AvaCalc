@@ -299,7 +299,10 @@ var Gui = oo.Base({
 	},
 
 	_onAddService: function() {
-		var selectedNodes = this.ca.getSelected();		
+		// Remove all nodes that are not devices
+		var selectedNodes = this.ca.getSelected().filter((node) => {
+			return oo.isInterfaceOf(node, CyDevice);
+		});
 
 		if (selectedNodes.length > 0)
 		{
