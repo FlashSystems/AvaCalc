@@ -35,14 +35,14 @@
 				</div>
 				<div class="row">
 					<div class="input-field col s6">
-						<input placeholder="Server 1 " id="deviceName" data-link="name" type="text" class="validate autocomplete allowenter autofocus" autocomplete="off" required="on">
+						<input placeholder="Server 1 " id="deviceName" data-link="name" type="text" class="validate autocomplete allowenter autofocus" autocomplete="off" required>
 						<label for="deviceName">Device name</label>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col s6">
 						<div class="input-field inline">
-							<input placeholder="99.6" id="availability" type="number" data-link="availability" min="0" max="100" step="0.01" class="validate allowenter" required="required" pattern="[0-9]+[.,][0-9]+" required="on">
+							<input placeholder="99.6" id="availability" type="number" data-link="availability" min="0" max="100" step="0.01" class="validate allowenter" required>
 							<label for="availability" data-error="Please enter a percentage value.">Availability</label>
 						</div>
 						%
@@ -68,14 +68,14 @@
 				</div>
 				<div class="row">
 					<div class="input-field col s6">
-						<input placeholder="Webserver" id="serviceName" type="text" data-link="name" class="validate allowenter autocomplete autofocus" autocomplete="off" required="on">
+						<input placeholder="Webserver" id="serviceName" type="text" data-link="name" class="validate allowenter autocomplete autofocus" autocomplete="off" required>
 						<label for="serviceName">Service name</label>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col s6">
 						<div class="input-field inline">
-							<input placeholder="100" id="capacity" type="number" data-link="capacity" min="0" max="100" step="1" class="validate allowenter" required="required" pattern="[0-9]+" required="on">
+							<input placeholder="100" id="capacity" type="number" data-link="capacity" min="0" max="100" step="1" class="validate allowenter"  required>
 							<label for="capacity" data-error="Please enter a percentage value.">Capacity</label>
 						</div>
 						%
@@ -122,10 +122,10 @@
 			<h5>Credits</h5>
 			<p>This software uses the following modules supplied by other people or organisations:</p>
 			<ul id="credits" class="icons">
-				<li class="credit"><a href="https://jquery.com/">jQuery</a><p>write less, do more<p/><p class="license">MIT license</p></li>
-				<li class="credit"><a href="http://js.cytoscape.org/">cytoscape.js</a><p>Network Data Integration, Analysis, and Visualization in a Box.<p/><p class="license">MIT license</p></li>
+				<li class="credit"><a href="https://jquery.com/">jQuery</a><p>write less, do more</p><p class="license">MIT license</p></li>
+				<li class="credit"><a href="http://js.cytoscape.org/">cytoscape.js</a><p>Network Data Integration, Analysis, and Visualization in a Box.</p><p class="license">MIT license</p></li>
 				<li class="credit"><a href="http://materializecss.com/">Materialize CSS</a><p>A modern responsive front-end framework based on Material Design.</p><p class="license">MIT license</p></li>
-				<li class="credit"><a href="https://github.com/infusion/Fraction.js/">fraction.js</a><p>ℚ in JavaSript<p/><p class="license">MIT license</p></li>
+				<li class="credit"><a href="https://github.com/infusion/Fraction.js/">fraction.js</a><p>ℚ in JavaSript</p><p class="license">MIT license</p></li>
 				<li class="credit"><a href="https://idya.github.io/oolib/">oolib.js</a><p>The JavaScript OOP library</p><p class="license">MIT license</p></li>
 				<li class="credit"><a href="https://github.com/joshmcarthur/jquery.savefile">jQuery.savefile.js</a><p>A simple jQuery interface to SaveFile, making it easier to download files from Javascript.</p><p class="license">propriatery (MIT like)</p></li>
 			</ul>
@@ -148,7 +148,7 @@
 				<ul class="icons">
 					<li class="time">The simulation took <span id="simDuration"></span> to complete.</li>
 					<li class="simResult vcenter"><span>The statistical availability of this design is </span><span class="importantValue" id="simAva"></span><span class="importantValue">%</span></li>
-					<li class="warning vcenter" id="simSpofLine"><span>The simulation revealed </span><span class="importantValue" id="simSpofCount"></span><span class="importantValue"> single points of failure.</span> Please open the &quot;single point of failure&quot; tab for more information.</span></li>
+					<li class="warning vcenter" id="simSpofLine"><span>The simulation revealed </span><span class="importantValue" id="simSpofCount"></span><span class="importantValue"> single points of failure.</span><span>Please open the &quot;single point of failure&quot; tab for more information.</span></li>
 				</ul>
 				<p>This yields the following allowed downtimes for differnet service times:</p>
 				<table class="striped">
