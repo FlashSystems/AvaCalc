@@ -1,5 +1,5 @@
+(A) Linking a deivce with the stp is not possible.
 (B) Erklärungen in der Add/Modify-Dialogen für die einzelnen Felder +gui @feature
-(C) Hotkeys +gui @feature
 (C) Tabs im Result-Dialog korrekt auswählen +gui @bug
 (D) Abbrechen der Simulation erlauben +sim @feature
 (D) Prüfen der Sichtbarkeit von Klassenelementen +sim +gui @cleanup
@@ -11,3 +11,4 @@ x (A) Korrekte ausrichtung der Symbole im Simulationsergebnis +gui @bug
 x (A) Popups bleiben beim Löschen (clear) hängen +gui @bug
 x (B) About-Box erstellen +gui @feature
 x (B) Anzeigen der Simulationszeit mit korrekter Einheit +gui @feature
+x (C) Hotkeys +gui @feature

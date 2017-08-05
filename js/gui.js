@@ -44,6 +44,11 @@ var Gui = oo.Base({
 		$("#btnClear").on("click", this._clearClick.bind(this));
 		$("#addDevice").on("click", this._onAddDevice.bind(this));
 		$("#addService").on("click", this._onAddService.bind(this));
+
+		// Hook up hotkeys
+		$(document).on('keypress', null, "d", this._onHotkey.bind(this, "d"));
+		$(document).on('keypress', null, "s", this._onHotkey.bind(this, "s"));
+		$(document).on('keypress', null, "l", this._onHotkey.bind(this, "l"));
 	},
 
 	_editDialog: function(dialog, values, autoComplete, okCallback) {
@@ -321,5 +326,23 @@ var Gui = oo.Base({
 	_clearClick: function() {
 		this.ca.clear();
 		this.ca.addSTP();
+	},
+
+	_onHotkey: function(key) {
+		// Hotkeys only work if no modal is visible
+		if ($(".modal:visible").length === 0) {
+			switch (key) {
+				case "d":
+					this._onAddDevice();
+					break;
+				case "s":
+					this._onAddService();
+					break;
+				case "l":
+					var selectedNodes = this.ca.getSelected();
+					if (selectedNodes.length === 1) this._linkNode(selectedNodes[0]);
+					break;
+			}
+		}
 	}
 });
