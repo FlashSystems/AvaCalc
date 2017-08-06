@@ -419,8 +419,8 @@ var CytoscapeApi = Events({
 		if (src && dst && src.isNode() && dst.isNode()) {
 			var srcType = src.data("type");
 			var dstType = dst.data("type");
-			if (src.edgesTo(dst).length || dst.edgesTo(src).length) return false;
-			return ((srcType === dstType) || (srcType === "stp")) && (src.id() !== dst.id());
+			if (src.edgesTo(dst).length || dst.edgesTo(src).length) return false;			
+			return ((srcType === dstType) || (srcType === "stp") || (srcType === "device" && (dstType === "stp"))) && (src.id() !== dst.id());
 		} else {
 			return false;
 		}
@@ -488,7 +488,12 @@ var CytoscapeApi = Events({
 		if (this._linkSource) {
 			var linkDestination = event.target[0];
 			if (this._isLinkable(this._linkSource, linkDestination)) {
-				var linkType = linkDestination.data("type"); // Using the destination type allows the STP to connect to everything wihtout an exception
+				var linkType = linkDestination.data("type");
+
+				// If the destination is the STP use a device-link. Only devices can have
+				// the STP as a destination. Services can not. This is blocked within _isLinkable.
+				if (linkType == "stp") linkType = "device";
+
 				this.cy.add({
 					group: "edges",
 					classes: linkType,
