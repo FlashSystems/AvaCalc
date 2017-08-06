@@ -242,43 +242,48 @@ var Gui = oo.Base({
 			'height': "0"
 		})
 
-		$("#simAva").text((result.availability * 100).toFixed(5));
-		$("#simDuration").text(this._formatDuration(duration));
-
-		var avaWeeks = [ 52, 4, 1];
-		avaWeeks.forEach((weeks) => {
-			this._showDowntime($("#ava7x24w" + weeks.toString()), 7*24, weeks, result.availability);
-			this._showDowntime($("#ava5x10w" + weeks.toString()), 5*10, weeks, result.availability);
-			this._showDowntime($("#ava6x8w" + weeks.toString()), 6*8, weeks, result.availability);
-			this._showDowntime($("#ava5x8w" + weeks.toString()), 5*8, weeks, result.availability);
-		});
-
-		$("#spofs").empty();
-		if (result.singlePointsOfFailure.length === 0) {
-			$("#spofs").append($("<li></li>", {
-				'class': "nospof",
-				'text': "No single points of failure found.",
-			}));
-
-			// Hide the single point of failure information on the availablity tab.
-			$("#simSpofLine").hide();
+		if (result.error) {
+			$("#simErrorText").text(result.error);
+			$("#simError").modal("open");
 		} else {
-			result.singlePointsOfFailure.forEach((id) => {
-				var node = this.ca.getNodeById(id);
-				
-				$("#spofs").append($("<li></li>", {
-					'class': "spof",
-					'text': node.getName()
-				}));
+			$("#simAva").text((result.availability * 100).toFixed(5));
+			$("#simDuration").text(this._formatDuration(duration));
+
+			var avaWeeks = [ 52, 4, 1];
+			avaWeeks.forEach((weeks) => {
+				this._showDowntime($("#ava7x24w" + weeks.toString()), 7*24, weeks, result.availability);
+				this._showDowntime($("#ava5x10w" + weeks.toString()), 5*10, weeks, result.availability);
+				this._showDowntime($("#ava6x8w" + weeks.toString()), 6*8, weeks, result.availability);
+				this._showDowntime($("#ava5x8w" + weeks.toString()), 5*8, weeks, result.availability);
 			});
 
-			// Show the single point of failure information on the availablity tab.
-			$("#simSpofLine").show();
-			$("#simSpofCount").text(result.singlePointsOfFailure.length);
-		}
+			$("#spofs").empty();
+			if (result.singlePointsOfFailure.length === 0) {
+				$("#spofs").append($("<li></li>", {
+					'class': "nospof",
+					'text': "No single points of failure found.",
+				}));
 
-		$('#simResultTabs').tabs('select_tab', 'simResultAva');
-		$("#simResult").modal("open");
+				// Hide the single point of failure information on the availablity tab.
+				$("#simSpofLine").hide();
+			} else {
+				result.singlePointsOfFailure.forEach((id) => {
+					var node = this.ca.getNodeById(id);
+					
+					$("#spofs").append($("<li></li>", {
+						'class': "spof",
+						'text': node.getName()
+					}));
+				});
+
+				// Show the single point of failure information on the availablity tab.
+				$("#simSpofLine").show();
+				$("#simSpofCount").text(result.singlePointsOfFailure.length);
+			}
+
+			$('#simResultTabs').tabs('select_tab', 'simResultAva');
+			$("#simResult").modal("open");
+		}
 
 		// Restore the simulation button
 		$("#menuSimulateStop").parent().hide();

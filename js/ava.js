@@ -230,8 +230,21 @@ var AvaStp = oo.Base({
 			this.getRootService().simulateDeviceActivate(avaCtx); // The Root-Service (STP) has no associated device. It must be manually activated.
 			var simulationResult = this.getRootService().isActive(avaCtx);
 
+			// Do some sanity checks after the first run. This run will initialize the different parameters
+			// of the avaCtx structure. Therefore we can do the test only after the first iteration.
+			if (level === 0) {
+				var visitedDevicesCount = 0;
+				avaCtx.visitedDevices.forEach((visited) => {
+					if (visited) visitedDevicesCount++;
+				});
+
+				if (visitedDevicesCount !== avaCtx.visitedDevices.length) throw "Not all devices are reachable from the STP. Please check the connections between the devices and the STP.";
+
+				if (simulationResult === false) throw "Your design does not work with all devices available. Please check the capacity of the services.";
+			}
+
 			// If we're at level 1 and the simulation result is false we found a single point of failure
-			if (!simulationResult && (level == 1)) {
+			if (!simulationResult && (level === 1)) {
 				// Search for the disabled device and put it's number into the SPOF list.
 				for (var i = 1; i < this._numDevices; i++) {
 					if (!avaCtx.deviceMask[i]) {
@@ -239,7 +252,7 @@ var AvaStp = oo.Base({
 						break;
 					}
 				}
-			}
+			}			
 
 			// Create a backup copy of the visited mask. The mask within the context is modified within the following loop.
 			thisVisitedMask = avaCtx.visitedDevices.slice();
@@ -311,13 +324,25 @@ var AvaStp = oo.Base({
 		// Initialize the avaCtx with statistics information
 		this._rootDevice.initCtx(avaCtx);
 	
-		// Start the simulation by disabling device 1.
-		// The Root-Device (ID 0) is always present and will never be disabled.
-		this._recurseMask(avaCtx, progressCallback, 0, 1, (new Array(this._numDevices).fill(true)));
+		try
+		{
+			// Start the simulation by disabling device 1.
+			// The Root-Device (ID 0) is always present and will never be disabled.
+			this._recurseMask(avaCtx, progressCallback, 0, 1, (new Array(this._numDevices).fill(true)));
 
-		return {
-			'availability': avaCtx.availability,
-			'singlePointsOfFailure': avaCtx.singlePointsOfFailure
-		};
+			return {
+				'error': undefined,
+				'availability': avaCtx.availability,
+				'singlePointsOfFailure': avaCtx.singlePointsOfFailure
+			};
+		}
+		catch (err)
+		{
+			return {
+				'error': err,
+				'availability': 0,
+				'singlePointsOfFailure': []
+			};
+		}
 	}
 });

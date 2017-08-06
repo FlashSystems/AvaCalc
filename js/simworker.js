@@ -51,6 +51,7 @@ var SimWorker = oo.Base({
 		spofIds = result.singlePointsOfFailure.map((id) => { return expandedModel.deviceIdMap[id]; });
 
 		return {
+			'error': result.error,
 			'availability': result.availability.valueOf(),
 			'singlePointsOfFailure': spofIds
 		}
