@@ -281,8 +281,14 @@ var Gui = oo.Base({
 				$("#simSpofCount").text(result.singlePointsOfFailure.length);
 			}
 
-			$('#simResultTabs').tabs('select_tab', 'simResultAva');
-			$("#simResult").modal("open");
+			// Make sure that the simResultAva Tab is shown when the dialog opens
+			$("#simResultTabs").tabs('select_tab', 'simResultAva');
+			$("#simResult").modal("open", {
+				'ready': (modal, trigger) => {
+					// THe tab will not be selected correctly if it is selected before the dialog opens.
+					modal.find("#simResultTabs").first().tabs('select_tab', 'simResultAva');
+				}
+			});
 		}
 
 		// Restore the simulation button
