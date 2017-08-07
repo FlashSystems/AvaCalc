@@ -513,7 +513,7 @@ var CytoscapeApi = Events({
 		} else {
 			if (this._getSelected().length != 1)
 			{
-				this._clearPopup(this._getSelected());
+				this._getSelected().forEach((node) => { this._clearPopup(node); });
 			} else {			
 				this._showPopup(event.target);
 			}
