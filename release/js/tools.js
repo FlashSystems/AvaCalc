@@ -1,0 +1,1 @@
+"use strict";var Tools;!function(t){t.attachClick=function(t,o){$.each(o,function(o,n){t.find("#"+o).off("click").on("click",n)})},t.translateViewport=function(t,o){var n={},c=t.position();return o.x1&&(n.x1=c.left+o.x1),o.x2&&(n.x2=c.left+o.x2),o.y1&&(n.y1=c.top+o.y1),o.y2&&(n.y2=c.top+o.y2),o.x&&(n.x=c.left+o.x),o.y&&(n.y=c.top+o.y),n}}(Tools||(Tools={}));

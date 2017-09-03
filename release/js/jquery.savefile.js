@@ -1,0 +1,1 @@
+!function(e){"use strict";function n(e,n){var o=document.createElement("a");"string"==typeof o.download?(document.body.appendChild(o),o.download=n,o.href=e,o.click(),document.body.removeChild(o)):location.replace(e)}jQuery.savefile={url:function(e,o){n(e,o)},file:function(e,o,t){n(t="data:"+e+";base64,"+window.btoa(unescape(encodeURIComponent(t))),o)}}}();

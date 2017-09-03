@@ -1,5 +1,5 @@
 QUnit.test( "Ava 1", function( assert ) {
-	var stp = new AvaStp();
+	var stp = new Ava.Stp();
 
 	var rootDevice = stp.getRootDevice();
 	var deviceA = rootDevice.newDevice(0.999);
@@ -20,7 +20,7 @@ QUnit.test( "Ava 1", function( assert ) {
 });
 
 QUnit.test( "Ava 2", function( assert ) {
-	var stp = new AvaStp();
+	var stp = new Ava.Stp();
 
 	var rootDevice = stp.getRootDevice();
 	var deviceA = rootDevice.newDevice(0.999);
@@ -41,7 +41,7 @@ QUnit.test( "Ava 2", function( assert ) {
 });
 
 QUnit.test( "Ava 3", function( assert ) {
-	var stp = new AvaStp();
+	var stp = new Ava.Stp();
 
 	var rootDevice = stp.getRootDevice();
 	var deviceA = rootDevice.newDevice(0.999);
@@ -67,7 +67,7 @@ QUnit.test( "Ava 3", function( assert ) {
 });
 
 QUnit.test( "Two Services with less than 100% contribution", function( assert ) {
-	var stp = new AvaStp();
+	var stp = new Ava.Stp();
 
 	var rootDevice = stp.getRootDevice();
 	var deviceA = rootDevice.newDevice(0.999);
@@ -93,7 +93,7 @@ QUnit.test( "Two Services with less than 100% contribution", function( assert ) 
 });
 
 QUnit.test( "Three Services with less than 100% contribution", function( assert ) {
-	var stp = new AvaStp();
+	var stp = new Ava.Stp();
 
 	var rootDevice = stp.getRootDevice();
 	var deviceA = rootDevice.newDevice(0.999);
@@ -124,7 +124,7 @@ QUnit.test( "Three Services with less than 100% contribution", function( assert 
 });
 
 QUnit.test( "Services spanning a connection device", function( assert ) {
-	var stp = new AvaStp();
+	var stp = new Ava.Stp();
 
 	var rootDevice = stp.getRootDevice();
 	var deviceA = rootDevice.newDevice(0.999);
@@ -138,7 +138,7 @@ QUnit.test( "Services spanning a connection device", function( assert ) {
 });
 
 QUnit.test( "Multiple services spanning one connection device", function( assert ) {
-	var stp = new AvaStp();
+	var stp = new Ava.Stp();
 
 	var rootDevice = stp.getRootDevice();
 	var deviceA = rootDevice.newDevice(0.999);
@@ -162,7 +162,7 @@ QUnit.test( "Multiple services spanning one connection device", function( assert
 });
 
 QUnit.test( "Redundant services spanning one connection device", function( assert ) {
-	var stp = new AvaStp();
+	var stp = new Ava.Stp();
 
 	var rootDevice = stp.getRootDevice();
 	var deviceA = rootDevice.newDevice(0.995);
@@ -188,7 +188,7 @@ QUnit.test( "Redundant services spanning one connection device", function( asser
 });
 
 QUnit.test( "Complex setup", function( assert ) {
-	var stp = new AvaStp();
+	var stp = new Ava.Stp();
 
 	var rootDevice = stp.getRootDevice();
 	var deviceA = rootDevice.newDevice(0.95);
@@ -244,7 +244,7 @@ QUnit.test( "Complex setup", function( assert ) {
 });
 
 QUnit.test( "Long interconnected chain", function( assert ) {
-	var stp = new AvaStp();
+	var stp = new Ava.Stp();
 
 	var rootDevice = stp.getRootDevice();
 	var deviceA = rootDevice.newDevice(0.995);
@@ -290,7 +290,7 @@ QUnit.test( "Long interconnected chain", function( assert ) {
 });
 
 QUnit.test( "Many good configurations", function( assert ) {
-	var stp = new AvaStp();
+	var stp = new Ava.Stp();
 
 	var rootDevice = stp.getRootDevice();
 	var deviceA = rootDevice.newDevice(0.995);

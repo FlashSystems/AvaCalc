@@ -1,0 +1,37 @@
+{
+  "name": "avacalc",
+  "version": "0.5.0",
+  "description": "Online availability calculator application.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@citadel.intern.flashsystems.de/~/repo/web AvaCalc.git"
+  },
+  "keywords": [
+    "availablility",
+    "calculator",
+    "ava"
+  ],
+  "author": "Daniel Goß",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@types/jquery": "^3.2.12",
+    "@types/materialize-css": "^0.100.0",
+    "cytoscape": "^3.2.2",
+    "fraction.js": "^4.0.3",
+    "gulp": "^3.9.1",
+    "gulp-noop": "^1.0.0",
+    "gulp-typescript": "^3.2.2",
+    "gulp-uglify": "^3.0.0",
+    "jquery": "^3.2.1",
+    "materialize-css": "^0.100.2",
+    "mdi": "^2.0.46",
+    "typescript": "^2.5.2"
+  },
+  "dependencies": {
+    "gulp-sourcemaps": "^2.6.1"
+  }
+}

@@ -1,0 +1,183 @@
+.cycanvas {
+	position: absolute;
+	top: 64px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	z-index: 1;
+}
+
+nav {
+	z-index: 2;
+}
+
+h4 i.mdi {
+	margin: 0 0.5em 0 0.5em;
+}
+
+#toast-container div.error {
+	background-color: #600000;
+}
+
+#toast-container div i.mdi {
+	margin-right: 0.5em;
+	margin-left: 0;
+}
+
+.options
+{
+	position: absolute;
+	display: none;
+	z-index: 10;
+}
+
+.options ul li
+{
+	float: left;
+	margin-left: 2px;
+}
+
+.plumbing
+{
+	display: none;
+	visibility: hidden;
+}
+
+.hidden
+{
+	display: none;
+}
+
+.progressInfo
+{
+	position: fixed;
+	width: 100%;
+	height: 0px;
+	bottom: 0px;
+
+	z-index: 100;
+
+	padding: 0 2em 0 2em;
+
+	background-color: #606060;
+}
+
+.progressInfo p
+{
+	color: white;
+	margin: 0.5em 0 0 0;	
+}
+
+.progressInfo #runIcon
+{
+	font-size: 150%;
+}
+
+.information
+{
+	color: gray;
+}
+
+span.importantValue
+{
+	font-size: 125%;
+	font-weight: bold;
+}
+
+ul.icons
+{
+	list-style-type: none;
+}
+
+ul.icons li
+{
+	margin-top: 0.25em;
+	padding-left: 30px;
+	background-repeat: no-repeat;
+	background-position: left center;
+}
+
+ul.icons li.time
+{
+	background-image: url(../images/bullet_time.svg);
+}
+
+ul.icons li.simResult
+{
+	background-image: url(../images/bullet_simresult.svg);
+}
+
+ul.icons li.warning
+{
+	background-image: url(../images/bullet_warning.svg);
+}
+
+ul.icons li.spof
+{
+	background-image: url(../images/bullet_spof.svg);
+}
+
+ul.icons li.nospof
+{
+	background-image: url(../images/bullet_nospof.svg);
+}
+
+ul.icons li.credit
+{
+	background-image: url(../images/bullet_credit.svg);
+}
+
+.vcenter span
+{
+	vertical-align: middle;
+}
+
+.avac-logo
+{
+	background-image: url(../images/logo.svg);
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: 50px;
+
+	padding-left: 60px !important;	
+}
+
+/* Credits dialog */
+div#dlgAbout h4
+{
+	margin-bottom: 0;
+}
+
+div#dlgAbout p:first-of-type
+{
+	margin-top: 0;
+}
+
+div#dlgAbout ul#credits li
+{
+	margin-top: 0.5em;
+}
+
+div#dlgAbout ul#credits li p
+{
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+div#dlgAbout ul#credits li a
+{
+	color: black;
+	font-size: 120%;
+}
+
+div#dlgAbout ul#credits li p.license
+{
+	font-size: 80%;
+	color: gray;
+}
+
+div#dlgAbout .logo
+{
+	height: 64px;
+	float:right;
+}
