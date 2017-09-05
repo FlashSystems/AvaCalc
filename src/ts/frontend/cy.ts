@@ -11,6 +11,21 @@ module CytoscapeApi {
 		}
 	}
 
+	class CyInternal {
+		static wrap(node: Cytoscape.Node): CyNode {
+			switch (node.data("type")) {
+				case "device":
+					return new CyDevice(node);
+				case "service":
+					return new CyService(node);
+				case "stp":
+					return new CyStp(node);
+				default:
+					throw "Invalid node type";				
+			}
+		}
+	}
+
 	export class CyNode {
 		protected node: Cytoscape.Node;
 		protected data: CyNodeData;
@@ -74,6 +89,12 @@ module CytoscapeApi {
 			} else {
 				this.data.availability = 99.5;
 			}
+		}
+
+		enumServices(): CyService[] {
+			return this.node.children("node[type = 'service']").map((entry: Cytoscape.Node): CyService => {
+				return CyInternal.wrap(entry);
+			});
 		}
 
 		commit(node?: Cytoscape.Node) {
@@ -272,7 +293,7 @@ module CytoscapeApi {
 
 			// Define which buttons are shown on the popup for each node type.
 			this.buttonsForType = {
-				'device': Popup.Buttons.Add|Popup.Buttons.Edit|Popup.Buttons.Link|Popup.Buttons.Delete,
+				'device': Popup.Buttons.Add|Popup.Buttons.Edit|Popup.Buttons.Link|Popup.Buttons.Delete|Popup.Buttons.Clone,
 				'service': Popup.Buttons.Edit|Popup.Buttons.Link|Popup.Buttons.Delete,
 				'stp': Popup.Buttons.Link,
 				'edge': Popup.Buttons.Delete
@@ -287,6 +308,7 @@ module CytoscapeApi {
 			this.cy.on("zoom", (event: Cytoscape.Event) => { this.onZoom(event) });
 			this.cy.on("mouseover", (event: Cytoscape.Event) => { this.onMouseOver(event) });
 			this.cy.on("mouseout", (event: Cytoscape.Event) => { this.onMouseOut(event) });
+			this.cy.on("click", (event: Cytoscape.Event) => { this.onClick(event) });
 
 			this.linkSource = null;
 		}
@@ -299,6 +321,65 @@ module CytoscapeApi {
 			}
 
 			return nodeLabels;
+		}
+
+		private getSelectedCyNode(): Cytoscape.NodeCollection {
+			return this.cy.$(":selected");
+		}
+
+		private showPopup(target: Cytoscape.Node): void {
+			// If we're linking at the moment. We can't show a popup.
+			if (this.linkSource) return;
+
+			// If there is already a popup for this target. Do nothing.
+			if (target.scratch("popup")) return;
+
+			// Get the bounding box of the element for positioning
+			let absBBox = Tools.translateViewport($("#cycanvas"), target.renderedBoundingBox());
+
+			// Popups for Nodes and Edges are different
+			let popup = undefined;
+			if (target.isNode()) {
+				// Determin which buttons to show. If the type is unknown, show no popup.
+				let buttonFlags = this.buttonsForType[target.data("type")];
+				if (!buttonFlags) return;
+
+				popup = new Popup.Popup(buttonFlags, CyInternal.wrap(target));
+				target.scratch("popup", popup);
+
+				// Position the popup		
+				popup.show(absBBox.x1 + (absBBox.x2 - absBBox.x1 - popup.width()) / 2, absBBox.y1 - popup.height());
+			} else {
+				popup = new Popup.Popup(Popup.Buttons.Delete, CyInternal.wrap(target));
+				target.scratch("popup", popup);
+
+				// Position the popup		
+				popup.show(absBBox.x1 + (absBBox.x2 - absBBox.x1 - popup.width()) / 2, absBBox.y1 + (absBBox.y2 - absBBox.y1 - popup.height()) / 2);			
+			}
+
+			// Link events
+			popup.pass("add", this);
+			popup.pass("link", this);
+			popup.pass("edit", this);
+			popup.pass("delete", this);
+			popup.pass("clone", this);
+		}
+
+		private clearPopup(target: Cytoscape.Node): void {
+			let popup = <Popup.Popup>target.scratch("popup");
+			if (popup) popup.destroy();
+			target.removeScratch("popup");
+		}
+
+		private isLinkable(src: Cytoscape.Node, dst: Cytoscape.Node): boolean {
+			if (src && dst && src.isNode() && dst.isNode()) {
+				let srcType = src.data("type");
+				let dstType = dst.data("type");
+				if (src.edgesTo(dst).length || dst.edgesTo(src).length) return false;			
+				return ((srcType === dstType) || (srcType === "stp") || (srcType === "device" && (dstType === "stp"))) && (src.id() !== dst.id());
+			} else {
+				return false;
+			}
 		}
 
 		addSTP(): void {
@@ -343,7 +424,7 @@ module CytoscapeApi {
 		}
 
 		getNodeById(id: string): CyNode {
-			return this.wrap(this.cy.getElementById(id));
+			return CyInternal.wrap(this.cy.getElementById(id));
 		}
 
 		getNameCompletions(node: CyDevice | CyService): string[] {		
@@ -363,26 +444,9 @@ module CytoscapeApi {
 			this.cy.remove(this.cy.getElementById(node.id()));
 		}
 
-		private getSelectedCyNode(): Cytoscape.NodeCollection {
-			return this.cy.$(":selected");
-		}
-
-		private wrap(node: Cytoscape.Node): CyNode {
-			switch (node.data("type")) {
-				case "device":
-					return new CyDevice(node);
-				case "service":
-					return new CyService(node);
-				case "stp":
-					return new CyStp(node);
-				default:
-					throw "Invalid node type";				
-			}
-		}
-
 		getSelected(): CyNode[] {
 			return this.getSelectedCyNode().map((entry: Cytoscape.Node) => {
-				return this.wrap(entry)
+				return CyInternal.wrap(entry)
 			});
 		}
 
@@ -391,60 +455,6 @@ module CytoscapeApi {
 			this.linkSource = this.cy.getElementById(startNode.id());
 			$("#cycanvas").css("cursor", "no-drop");
 			this.getSelectedCyNode().unselect();
-		}
-
-		private showPopup(target: Cytoscape.Node): void {
-			// If we're linking at the moment. We can't show a popup.
-			if (this.linkSource) return;
-
-			// If there is already a popup for this target. Do nothing.
-			if (target.scratch("popup")) return;
-
-			// Get the bounding box of the element for positioning
-			let absBBox = Tools.translateViewport($("#cycanvas"), target.renderedBoundingBox());
-
-			// Popups for Nodes and Edges are different
-			let popup = undefined;
-			if (target.isNode()) {
-				// Determin which buttons to show. If the type is unknown, show no popup.
-				let buttonFlags = this.buttonsForType[target.data("type")];
-				if (!buttonFlags) return;
-
-				popup = new Popup.Popup(buttonFlags, this.wrap(target));
-				target.scratch("popup", popup);
-
-				// Position the popup		
-				popup.show(absBBox.x1 + (absBBox.x2 - absBBox.x1 - popup.width()) / 2, absBBox.y1 - popup.height());
-			} else {
-				popup = new Popup.Popup(Popup.Buttons.Delete, this.wrap(target));
-				target.scratch("popup", popup);
-
-				// Position the popup		
-				popup.show(absBBox.x1 + (absBBox.x2 - absBBox.x1 - popup.width()) / 2, absBBox.y1 + (absBBox.y2 - absBBox.y1 - popup.height()) / 2);			
-			}
-
-			// Link events
-			popup.pass("add", this);
-			popup.pass("link", this);
-			popup.pass("edit", this);
-			popup.pass("delete", this);
-		}
-
-		private clearPopup(target: Cytoscape.Node): void {
-			let popup = <Popup.Popup>target.scratch("popup");
-			if (popup) popup.destroy();
-			target.removeScratch("popup");
-		}
-
-		private isLinkable(src: Cytoscape.Node, dst: Cytoscape.Node): boolean {
-			if (src && dst && src.isNode() && dst.isNode()) {
-				let srcType = src.data("type");
-				let dstType = dst.data("type");
-				if (src.edgesTo(dst).length || dst.edgesTo(src).length) return false;			
-				return ((srcType === dstType) || (srcType === "stp") || (srcType === "device" && (dstType === "stp"))) && (src.id() !== dst.id());
-			} else {
-				return false;
-			}
 		}
 
 		save(): string {
@@ -574,6 +584,16 @@ module CytoscapeApi {
 			if (this.linkSource) {			
 				$("#cycanvas").css("cursor", "no-drop");
 			}
+		}
+
+		private onClick(event: Cytoscape.Event) {
+			if (this.linkSource != null) {		
+				// Clicking on the background will cancel linking.
+				if ((event.target) && (event.target === this.cy)) {
+					this.linkSource = null;
+					$("#cycanvas").css("cursor", "");
+				}
+			}			
 		}
 	}
 }
