@@ -36,6 +36,7 @@ module Gui {
 			this.ca.on("link", this.linkNode.bind(this));
 			this.ca.on("delete", this.deleteNode.bind(this));	
 			this.ca.on("edit", this.editNode.bind(this));
+			this.ca.on("clone", this.cloneNode.bind(this));
 
 			this.ca.addSTP();
 
@@ -97,7 +98,10 @@ module Gui {
 
 			dialog.find("a.btn-ok").off("click").on("click", () => {
 				for (let property in values) {
-					values[property] = <string>(dialog.find("input[data-link=" + property + "]").val());
+					let element = dialog.find("input[data-link=" + property + "]");
+					if (element.length > 0) {
+						values[property] = <string>(element.val());
+					}
 				}
 
 				let result: boolean;
@@ -196,6 +200,31 @@ module Gui {
 
 				return true;
 			});
+		}
+
+		private cloneNode(node: CytoscapeApi.CyNode): void {
+			if (node instanceof CytoscapeApi.CyDevice) {
+				let completions = {
+					'name': this.ca.getNameCompletions(node)
+				};
+
+				let editDialog = $("#dlgCloneDevice");
+
+				this.editDialog(editDialog, node.getData(), completions, (data: StringMap<string>) => {
+					let services = node.enumServices();
+
+					// AddDevice calls implicitly commit on the new node.
+					// The changed data will only be written to the new node.
+					this.ca.addDevice(node);
+
+					// Now readd the Services from the other node
+					for (let service of services) {
+						this.ca.addService(node, service);
+					}
+
+					return true;
+				});
+			}
 		}
 
 		private simStart(): void {
@@ -337,7 +366,8 @@ module Gui {
 
 			if (selectedNodes.length > 0)
 			{
-				this.addService(selectedNodes);
+				// This must be a CyDevice because we filtered for it just before.
+				this.addService(<CytoscapeApi.CyDevice[]>selectedNodes);
 			}
 			else
 			{

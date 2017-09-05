@@ -24,7 +24,7 @@
 	<script src="js/main.js"></script>
 </head>
 <body>
-	<!-- Dialog "AddDevice" -->
+	<!-- Dialog "EditDevice" -->
 	<div id="dlgEditDevice" class="modal modal-fixed-footer">
 		<div class="modal-content">
 			<h4 class="mdi mdi-server-network">Add device</h4>
@@ -57,7 +57,7 @@
 		</div>
 	</div>
 
-	<!-- Dialog "AddService" -->
+	<!-- Dialog "EditService" -->
 	<div id="dlgEditService" class="modal modal-fixed-footer">
 		<div class="modal-content">
 			<h4 class="mdi mdi-settings">Add service</h4>
@@ -91,6 +91,30 @@
 		</div>
 		<div class="modal-footer">
 			<a class="modal-action waves-effect waves-green btn-flat btn-ok">Save</a>
+			<a class="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+		</div>
+	</div>
+
+	<!-- Dialog "CloneDevice" -->
+	<div id="dlgCloneDevice" class="modal modal-fixed-footer">
+		<div class="modal-content">
+			<h4 class="mdi mdi-content-duplicate">Clone device</h4>
+			<form class="col s12">
+				<div class="row">
+					<div class="col s12">
+						Clicking "clone" will create a copy of the selected device and assign it the name entered below.
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s6">
+						<input placeholder="Server 1 " id="deviceName" data-link="name" type="text" class="validate autocomplete allowenter autofocus" autocomplete="off" required>
+						<label for="deviceName">Device name</label>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<a class="modal-action waves-effect waves-green btn-flat btn-ok">Clone</a>
 			<a class="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
 		</div>
 	</div>

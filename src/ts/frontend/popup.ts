@@ -1,5 +1,5 @@
 module Popup {
-	export enum Buttons { Add=0x01, Edit=0x02, Link=0x04, Delete=0x08 };
+	export enum Buttons { Add=0x01, Edit=0x02, Link=0x04, Delete=0x08, Clone=0x10 };
 
 	export class Popup extends Events {
 		private target: any;
@@ -39,6 +39,7 @@ module Popup {
 			let options = $('<ul><ul>');
 
 			if (itemFlags & Buttons.Add) this.addMenuItem(options, ["green"], "mdi-plus", "add");
+			if (itemFlags & Buttons.Clone) this.addMenuItem(options, ["light-green"], "mdi-content-duplicate", "clone");
 			if (itemFlags & Buttons.Edit) this.addMenuItem(options, ["lime", "darken-2"], "mdi-pen", "edit");
 			if (itemFlags & Buttons.Link) this.addMenuItem(options, ["blue"], "mdi-link", "link");
 			if (itemFlags & Buttons.Delete) this.addMenuItem(options, ["red"], "mdi-delete", "delete");
