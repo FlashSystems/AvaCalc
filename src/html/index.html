@@ -28,7 +28,7 @@
 	<div id="dlgEditDevice" class="modal modal-fixed-footer">
 		<div class="modal-content">
 			<h4 class="mdi mdi-server-network">Add device</h4>
-			<form class="col s12">
+			<div class="col s12">
 				<div class="row">
 					<div class="col s12">
 						Clicking "add" will create a new device. Please enter the name of the new device below.
@@ -36,7 +36,7 @@
 				</div>
 				<div class="row">
 					<div class="input-field col s6">
-						<input placeholder="Server 1 " id="deviceName" data-link="name" type="text" class="validate autocomplete allowenter autofocus" autocomplete="off" required>
+						<input placeholder="Server 1" id="deviceName" data-link="name" type="text" class="validate autocomplete allowenter autofocus" autocomplete="off" required>
 						<label for="deviceName">Device name</label>
 					</div>
 				</div>
@@ -49,7 +49,7 @@
 						%
 					</div>
 				</div>
-			</form>
+			</div>
 		</div>
 		<div class="modal-footer">
 			<a class="modal-action waves-effect waves-green btn-flat btn-ok">Save</a>
@@ -61,7 +61,7 @@
 	<div id="dlgEditService" class="modal modal-fixed-footer">
 		<div class="modal-content">
 			<h4 class="mdi mdi-settings">Add service</h4>
-			<form class="col s12">
+			<div class="col s12">
 				<div class="row">
 					<div class="col s12">
 					Clicking "add" will create a new service hat is provided by the selected device. Please enter the name of the new service below.
@@ -82,12 +82,12 @@
 						%
 					</div>
 					<div class="row">						
-						<div class="col s12 information">
+						<div class="col s12 indivation">
 							The capacity defines the load handling capability of a service. If three services have a capacity of 50%, two of them must be available for the service to be considered available. If you set the capacity to 34% all three services must be available all the time for the service to be available. It is allowed (and common) for services to have an over all capacity of more that 100%.
 						</div>
 					</div>
 				</div>
-			</form>
+			</div>
 		</div>
 		<div class="modal-footer">
 			<a class="modal-action waves-effect waves-green btn-flat btn-ok">Save</a>
@@ -99,7 +99,7 @@
 	<div id="dlgCloneDevice" class="modal modal-fixed-footer">
 		<div class="modal-content">
 			<h4 class="mdi mdi-content-duplicate">Clone device</h4>
-			<form class="col s12">
+			<div class="col s12">
 				<div class="row">
 					<div class="col s12">
 						Clicking "clone" will create a copy of the selected device and assign it the name entered below.
@@ -107,11 +107,11 @@
 				</div>
 				<div class="row">
 					<div class="input-field col s6">
-						<input placeholder="Server 1 " id="deviceName" data-link="name" type="text" class="validate autocomplete allowenter autofocus" autocomplete="off" required>
+						<input placeholder="Server 1" id="deviceName" data-link="name" type="text" class="validate autocomplete allowenter autofocus" autocomplete="off" required>
 						<label for="deviceName">Device name</label>
 					</div>
 				</div>
-			</form>
+			</div>
 		</div>
 		<div class="modal-footer">
 			<a class="modal-action waves-effect waves-green btn-flat btn-ok">Clone</a>
@@ -141,7 +141,7 @@
 			<p>Developed by Daniel Goß 2017</p>			
 			<p>Licensed under the <a href="http://www.gnu.de/documents/gpl.en.html">GPL v3</a>.</p>
 			<h5>Privacy</h5>
-			<p>This is a JavaScript application. All data processing occures localy. No information about your design or the executed operations is transmitted back to Flash&nbsp;Systems. To be extra sure you can inspect the source code on <a href="https://github.com/FlashSystems/AvaCalc">GitHub</a>.</p>
+			<p>This is a JavaScript application. All data processing occures localy. No indivation about your design or the executed operations is transmitted back to Flash&nbsp;Systems. To be extra sure you can inspect the source code on <a href="https://github.com/FlashSystems/AvaCalc">GitHub</a>.</p>
 			<h5>Code and Bugs</h5>
 			<p>If you want to get the source code of this application, submit a pull request or report a bug just jump over to <a href="https://github.com/FlashSystems/AvaCalc">GitHub</a></p>
 			<h5>Credits</h5>
@@ -151,7 +151,7 @@
 				<li class="credit"><a href="https://jquery.com/">jQuery</a><p>write less, do more</p><p class="license">MIT license</p></li>
 				<li class="credit"><a href="http://js.cytoscape.org/">cytoscape.js</a><p>Network Data Integration, Analysis, and Visualization in a Box.</p><p class="license">MIT license</p></li>
 				<li class="credit"><a href="http://materializecss.com/">Materialize CSS</a><p>A modern responsive front-end framework based on Material Design.</p><p class="license">MIT license</p></li>
-				<li class="credit"><a href="https://materialdesignicons.com/">Material Design Icons</a><p>Material Design Icons' growing icon collection allows designers and developers targeting various platforms to download icons in the format, color and size they need for any project.</p><p class="license">Apache License 2.0/SIL Open Font License 1.1</p></li>
+				<li class="credit"><a href="https://materialdesignicons.com/">Material Design Icons</a><p>Material Design Icons' growing icon collection allows designers and developers targeting various platdivs to download icons in the divat, color and size they need for any project.</p><p class="license">Apache License 2.0/SIL Open Font License 1.1</p></li>
 				<li class="credit"><a href="https://github.com/infusion/Fraction.js/">fraction.js</a><p>ℚ in JavaSript</p><p class="license">MIT license</p></li>
 				<li class="credit"><a href="https://idya.github.io/oolib/">oolib.js</a><p>The JavaScript OOP library</p><p class="license">MIT license</p></li>
 				<li class="credit"><a href="https://github.com/joshmcarthur/jquery.savefile">jQuery.Savefile</a><p>A simple jQuery interface to SaveFile, making it easier to download files from Javascript.</p><p class="license">propriatery (MIT like)</p></li>
@@ -189,7 +189,7 @@
 				<ul class="icons">
 					<li class="time">The simulation took <span id="simDuration"></span> to complete.</li>
 					<li class="simResult vcenter"><span>The statistical availability of this design is </span><span class="importantValue" id="simAva"></span><span class="importantValue">%</span></li>
-					<li class="warning vcenter" id="simSpofLine"><span>The simulation revealed </span><span class="importantValue" id="simSpofCount"></span><span class="importantValue"> single points of failure.</span><span>Please open the &quot;single point of failure&quot; tab for more information.</span></li>
+					<li class="warning vcenter" id="simSpofLine"><span>The simulation revealed </span><span class="importantValue" id="simSpofCount"></span><span class="importantValue"> single points of failure.</span><span>Please open the &quot;single point of failure&quot; tab for more indivation.</span></li>
 				</ul>
 				<p>This yields the following allowed downtimes for differnet service times:</p>
 				<table class="striped">
@@ -256,7 +256,7 @@
 				<li><a id="menuSave" class="tooltipped" data-tooltip="Save the current design"><i class="mdi mdi-content-save"></i></a></li>
 				<li><a id="menuLoad" class="tooltipped" data-tooltip="Open a saved design" data-position="left"><i class="mdi mdi-open-in-app"></i></a></li>
 				<li><a id="menuClear" href="#dlgClear" class="tooltipped modal-trigger" data-tooltip="Create a new, empty design" data-position="left"><i class="mdi mdi-delete"></i></a></li>
-				<li><a id="menuAbout" href="#dlgAbout" class="tooltipped modal-trigger" data-tooltip="About this website" data-position="left"><i class="mdi mdi-information-outline"></i></a></li>				
+				<li><a id="menuAbout" href="#dlgAbout" class="tooltipped modal-trigger" data-tooltip="About this website" data-position="left"><i class="mdi mdi-indivation-outline"></i></a></li>				
 			</ul>
 		</div>
 	</nav>
