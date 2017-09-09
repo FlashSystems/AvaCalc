@@ -28,7 +28,7 @@ gulp.task("ts-worker", () => {
 		.pipe(gulp.env.release ? noop() : sourcemaps.init())
 		.pipe(ts(assign(typeScriptDefaults, {
 			'lib': [ "WebWorker", "ES6"],
-			'types': [ "fraction" ]
+			'types': [ ]
 		})))
 		.pipe(gulp.env.release ? uglify() : noop() )
 		.pipe(gulp.env.release ? noop() : sourcemaps.write("../maps"))
@@ -92,7 +92,6 @@ gulp.task("libs-vendor-js", () => {
 	return gulp
 		.src([
 			"node_modules/materialize-css/dist/js/materialize.min.js",
-			"node_modules/fraction.js/fraction.min.js",
 			"node_modules/jquery/dist/jquery.min.js",
 			"node_modules/cytoscape/dist/cytoscape.min.js",
 			])

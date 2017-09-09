@@ -19,12 +19,12 @@ module Ava {
 
 	class Ctx {
 		public deviceMask: boolean[];
-		public deviceAva: Fraction[];
+		public deviceAva: number[];
 		public visitedDevices: boolean[];
 		public requiredSvcCount: number[];
 		public activeSvcCount: number[];
 		public activeSvcMap: ChildTypeMap[];
-		public availability: Fraction;
+		public availability: number;
 		public singlePointsOfFailure: number[];
 
 		constructor(numDevices: number, numServices: number) {
@@ -34,7 +34,7 @@ module Ava {
 			this.requiredSvcCount = new Array(numServices);
 			this.activeSvcCount =  new Array(numServices);
 			this.activeSvcMap = new Array(numServices);
-			this.availability = new Fraction(0);
+			this.availability = 0;
 			this.singlePointsOfFailure = [];
 
 			// Initialize arrays
@@ -144,12 +144,12 @@ module Ava {
 		private children: Device[] = [];
 		private services: Service[] = [];
 		private stpInstance: Stp;
-		private ava: Fraction;
+		private ava: number;
 		private deviceId: number;
 
 		constructor(stp: Stp, ava: number) {
 			this.stpInstance = stp;
-			this.ava = new Fraction(ava);
+			this.ava = ava;
 			this.deviceId = this.stpInstance.getNextDeviceId();
 		}
 
@@ -190,6 +190,13 @@ module Ava {
 			// Save the availability value for this device
 			avaCtx.deviceAva[this.deviceId] = this.ava;
 
+			// Sort children that have services to the front.
+			// This, in combination with aborting the search as soon as the STP gets activated,
+			// shortens simulation time significantly.
+			this.children.sort((a: Device, b: Device): number => {
+				return (b.services.length - a.services.length);
+			});
+
 			for (let service of this.services) {
 				service.initCtx(avaCtx);
 			}
@@ -199,7 +206,7 @@ module Ava {
 			}
 		}
 
-		simulate(avaCtx: Ctx): void {
+		simulate(avaCtx: Ctx, rootService: Service): void {
 			// If this device was already visited, just skip it.
 			if (avaCtx.visitedDevices[this.deviceId]) return;
 			avaCtx.visitedDevices[this.deviceId] = true;
@@ -212,9 +219,12 @@ module Ava {
 					service.simulateDeviceActivate(avaCtx);
 				}
 
-				for (let childDevice of this.children) {
-					// Walk the children of this device
-					childDevice.simulate(avaCtx);
+				// If the root-service is active we're done. We exit out of the recursion.
+				if ((rootService == null) || (!rootService.isActive(avaCtx))) {
+					for (let childDevice of this.children) {
+						// Walk the children of this device
+						childDevice.simulate(avaCtx, rootService);
+					}
 				}
 			}
 		}
@@ -266,7 +276,7 @@ module Ava {
 			// the current iteration. Because we're here we know that the previous iteration was successfull (good configuration)
 			// and if we're now disabling an unreachable device this iteration will be successfull, too. No need to simulate it.
 			// Just set the result to ok and continue.
-			// This will not influence the SOPF detection because the first iteration gets an outerVisibilityMask with all nodes
+			// This will not influence the SPOF detection because the first iteration gets an outerVisibilityMask with all nodes
 			// set to visible.
 			if (outerVisitedMask[currentDeviceIdx]) {
 				// Initialize the AvaContext for the next run			
@@ -274,8 +284,8 @@ module Ava {
 
 				//console.log("== Simulation ==");
 				//console.log(avaCtx.deviceMask);
-				this.getRootDevice().simulate(avaCtx);
 				this.getRootService().simulateDeviceActivate(avaCtx); // The Root-Service (STP) has no associated device. It must be manually activated.
+				this.getRootDevice().simulate(avaCtx, level == 0 ? null : this.getRootService());
 				simulationResult = this.getRootService().isActive(avaCtx);
 
 				// Do some sanity checks after the first run. This run will initialize the different parameters
@@ -316,19 +326,19 @@ module Ava {
 			// If the simulation was successfull, try disabling one
 			// more device
 			if (simulationResult) {
-				let propability = new Fraction(1);
+				let propability = 1;
 				for (let i = 0; i < this.numDevices; i++) {
 					if (avaCtx.deviceMask[i]) {
 						// The device is enabled. Add the propability of this to occure to the over all propability.
-						propability = propability.mul(avaCtx.deviceAva[i]);
+						propability = propability * avaCtx.deviceAva[i];
 					} else {
 						// The device has failed. Add the propability of this happening (1 - ava) to the over all propability.
-						propability = propability.mul((new Fraction(1)).sub(avaCtx.deviceAva[i]));
+						propability = propability * (1 - avaCtx.deviceAva[i]);
 					}
 				}
 
 				// If the configuration is alive and well. Add the propability to the over all propability of a good configuration.
-				avaCtx.availability = avaCtx.availability.add(propability);
+				avaCtx.availability = avaCtx.availability + propability;
 
 				// We only try disabling devices that where not already covered by the
 				// outer loop (recursion). Therefore we start at currentDeviceIdx and not at 1.
@@ -363,7 +373,7 @@ module Ava {
 				// The Root-Device (ID 0) is always present and will never be disabled.
 				this.recurseMask(avaCtx, progressCallback, 0, 1, (new Array(this.numDevices).fill(true)));
 
-				return new Result(avaCtx.availability.valueOf(), avaCtx.singlePointsOfFailure);
+				return new Result(avaCtx.availability, avaCtx.singlePointsOfFailure);
 			}
 			catch (err)
 			{

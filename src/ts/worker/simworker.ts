@@ -1,4 +1,3 @@
-importScripts("fraction.min.js")
 importScripts("ava.js")
 importScripts("model.js")
 
