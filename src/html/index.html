@@ -145,7 +145,7 @@
 			<h5>Code and Bugs</h5>
 			<p>If you want to get the source code of this application, submit a pull request or report a bug just jump over to <a href="https://github.com/FlashSystems/AvaCalc">GitHub</a></p>
 			<h5>Concurrency</h5>
-			<p>AvaCalc will use <span class="cores"></span> to run the simulation model.</p>
+			<p>AvaCalc will use a maximum of <span id="cores"></span> to run the simulation model.</p>
 			<h5>Credits</h5>
 			<p>This software uses the following modules supplied by other people or organisations:</p>
 			<ul id="credits" class="icons">
@@ -268,7 +268,7 @@
 
 	<!-- Progress indicator -->
 	<div class="progressInfo" id="simProgress">
-		<p class="vcenter"><span class="mdi mdi-run" id="runIcon"></span><span>Simulation running using </span><span class="cores"></span><span>...</span></p>
+		<p class="vcenter"><span class="mdi mdi-run" id="runIcon"></span><span>Simulation running using </span><span id="runningWorkers"></span><span>...</span></p>
 		<div class="progress">
 			<div class="determinate" id="progressBar" style="width: 0%"></div>
 		</div>

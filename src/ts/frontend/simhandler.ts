@@ -1,3 +1,13 @@
+class ProgressInfo {
+	public readonly progress: number;
+	public readonly activeWorkers: number;
+
+	constructor(progress: number, activeWorkers: number) {
+		this.progress = progress;
+		this.activeWorkers = activeWorkers;
+	}
+}
+
 class WorkerThread extends Events {
 	private worker: Worker;
 	private readonly numWorkers: number;
@@ -86,9 +96,16 @@ class SimHandler extends Events {
 	}
 
 	private onProgress(): void {
-		this.trigger("progress", this.workers.reduce((acc: number, worker: WorkerThread): number => {
-			return acc + worker.getProgress();
-		}, 0) / this.numWorkers);
+		let progress = 0;
+		let activeWorkers = 0;
+
+		for (let worker of this.workers) {
+			progress += worker.getProgress();
+			if (worker.isRunning()) activeWorkers++;
+		}
+		progress = progress / this.numWorkers;
+
+		this.trigger("progress", new ProgressInfo(progress, activeWorkers));
 	}
 
 	private onDone(): void {

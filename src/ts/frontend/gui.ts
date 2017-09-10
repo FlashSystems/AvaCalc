@@ -61,7 +61,7 @@ module Gui {
 
 			// Show the number of worker threads
 			let numWorkers = this.sim.getNumWorkers();
-			$(".cores").text(numWorkers + " parallel " + (numWorkers > 1 ? "threads" : "thread"));
+			$("#cores").text(numWorkers + " " + (numWorkers > 1 ? "parallel threads" : "thread"));
 
 			// Hook up events
 			$("#menuSave").on("click", this.saveClick.bind(this));
@@ -248,6 +248,10 @@ module Gui {
 				'height': "64px"
 			})
 
+			// Until the first update is done by simProgress set the number of used workers to the maximum number.
+			let numWorkers = this.sim.getNumWorkers();
+			$("#runningWorkers").text(numWorkers + " " + (numWorkers > 1 ? "parallel threads" : "thread"));
+
 			this.simStartTime = (new Date()).getTime();
 		}
 
@@ -348,8 +352,10 @@ module Gui {
 			$("#menuSimulateStart").parent().show();
 		}
 
-		private simProgress(progress: number): void {
-			$("#progressBar").css("width", progress.toString() + "%");
+		private simProgress(progress: ProgressInfo): void {
+			$("#progressBar").css("width", progress.progress.toString() + "%");
+
+			$("#runningWorkers").text(progress.activeWorkers + " " + (progress.activeWorkers > 1 ? "parallel threads" : "thread"));
 		}
 
 		private onAddDevice(): void {
