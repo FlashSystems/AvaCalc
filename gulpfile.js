@@ -46,7 +46,7 @@ gulp.task("ts-frontend", () => {
 			'lib': [ "ES6", "dom" ],
 			'types': [ "jquery", "jquery-savefile", "materialize-css", "cytoscape", "compat" ],
 		})))
-		.pipe(uglify())
+		.pipe(gulp.env.release ? uglify() : noop())
 		.pipe(gulp.env.release ? noop() : sourcemaps.write("../maps"))
 		.pipe(gulp.dest(outputBaseDir + "/js/"));
 });
@@ -103,7 +103,7 @@ gulp.task("libs-my-js", () => {
 		.src([
 			"src/libs/*.js"
 			])
-		.pipe(uglify())
+		.pipe(gulp.env.release ? uglify() : noop())
 		.pipe(gulp.dest(outputBaseDir + "/js"));
 });
 
