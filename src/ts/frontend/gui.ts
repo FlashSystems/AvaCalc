@@ -64,6 +64,7 @@ module Gui {
 			$(document).on('keypress', null, "d", this.onHotkey.bind(this, "d"));
 			$(document).on('keypress', null, "s", this.onHotkey.bind(this, "s"));
 			$(document).on('keypress', null, "l", this.onHotkey.bind(this, "l"));
+			$(document).on('keypress', null, "c", this.onHotkey.bind(this, "c"));
 		}
 
 		private editDialog(dialog: JQuery<Node>, values: EditValueMap, autoComplete: Completions, okCallback: (values: EditValueMap) => boolean): void {
@@ -387,6 +388,8 @@ module Gui {
 		}
 
 		private onHotkey(key: string): void {
+			let selectedNodes = this.ca.getSelected();
+
 			// Hotkeys only work if no modal is visible
 			if ($(".modal:visible").length === 0) {
 				switch (key) {
@@ -396,8 +399,10 @@ module Gui {
 					case "s":
 						this.onAddService();
 						break;
+					case "c":
+						if ((selectedNodes.length === 1) && (selectedNodes[0] instanceof CytoscapeApi.CyNode)) this.cloneNode(selectedNodes[0]);
+						break;
 					case "l":
-						let selectedNodes = this.ca.getSelected();
 						if (selectedNodes.length === 1) this.linkNode(selectedNodes[0]);
 						break;
 				}
