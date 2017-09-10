@@ -1,26 +1,128 @@
-class SimHandler extends Events {
+class WorkerThread extends Events {
 	private worker: Worker;
+	private readonly numWorkers: number;
+	private readonly thisWorkerNumber: number;	
+	private progress: number = 0;
+	private simResult: Model.SimResult | null = null;
+
+	constructor(numWorkers: number, thisWorkerNumber: number) {
+		super();
+
+		this.numWorkers = numWorkers;
+		this.thisWorkerNumber = thisWorkerNumber;
+		this.worker = new Worker("js/simworker.js");
+		$(this.worker).on("message", this.onMessage.bind(this));
+	}
+
+	run(jsonModel: string): void {
+		this.progress = 0;
+		this.simResult = null;
+		this.worker.postMessage({"model": jsonModel, "numThreads": this.numWorkers, "thisThreadNumber": this.thisWorkerNumber}); //FIXME: !!!
+	}
+
+	getProgress(): number {
+		return this.progress;
+	}
+
+	getResult(): Model.SimResult | null {
+		return this.simResult;
+	}
+
+	isRunning(): boolean {
+		return this.simResult === null;
+	}
+
+	private onMessage(e: JQuery.Event) {
+		let data = (<MessageEvent>(e.originalEvent)).data;
+
+		if (data.event === "start") {
+			this.simResult = null;
+			this.trigger("start");			
+		} else if (data.event === "progress") {
+			this.progress = <number>data.progress;
+			this.trigger("progress", this.progress);
+		} else if (data.event === "done") {
+			this.simResult = <Model.SimResult>(JSON.parse(data.result, Model.inflater));
+			this.progress = 100;
+
+			this.trigger("done", this.simResult);
+		}		
+	}
+}
+
+class SimHandler extends Events {
+	private workers: WorkerThread[] = [];
+	private numWorkers: number;
+	private started: boolean = false;
 
 	constructor() {
 		super();
 
-		this.worker = new Worker("js/simworker.js");
-		$(this.worker).on("message", this.message.bind(this));
-	}
+		if ("hardwareConcurrency" in window.navigator) {
+			this.numWorkers = window.navigator.hardwareConcurrency;
+			if (this.numWorkers < 1) this.numWorkers = 1;
+		} else {
+			console.log("Browser does not support determination of hardware concurrency. Using 1 worker only.")
+			this.numWorkers = 1;
+		}
 
-	private message(e: JQuery.Event) {
-		let data = (<MessageEvent>(e.originalEvent)).data;
-
-		if (data.event === "start") {
-			this.trigger("start");
-		} else if (data.event === "progress") {
-			this.trigger("progress", data.progress);
-		} else if (data.event === "done") {
-			this.trigger("done", <Model.SimResult>(JSON.parse(data.result, Model.inflater)));
+		for (let i = 0; i < this.numWorkers; i++) {
+			this.workers[i] = new WorkerThread(this.numWorkers, i);
+			this.workers[i].on("start", this.onStart.bind(this));
+			this.workers[i].on("progress", this.onProgress.bind(this));
+			this.workers[i].on("done", this.onDone.bind(this));
 		}
 	}
 
-	run(model: Model.Model) {
-		this.worker.postMessage(JSON.stringify(model));
+	getNumWorkers(): number {
+		return this.numWorkers;
+	}
+
+	private onStart(): void {
+		if (!this.started) {
+			this.trigger("start");
+			this.started = true;
+		}
+	}
+
+	private onProgress(): void {
+		this.trigger("progress", this.workers.reduce((acc: number, worker: WorkerThread): number => {
+			return acc + worker.getProgress();
+		}, 0) / this.numWorkers);
+	}
+
+	private onDone(): void {
+		let done: boolean = true;
+		for (let worker of this.workers) {
+			if (worker.isRunning()) {
+				done = false;
+				break;
+			}
+		}
+
+		if (done) {
+			let result: Model.SimResult = null;
+
+			for (let worker of this.workers) {
+				if (result == null) {
+					result = worker.getResult();
+				} else {
+					result = result.combine(worker.getResult());
+				}
+			}
+
+			this.trigger("done", result);
+			this.started = false;		
+		}
+	}
+
+	run(model: Model.Model): void {
+		this.started = false;
+
+		let jsonModel = JSON.stringify(model);
+
+		for (let i = 0; i < this.numWorkers; i++) {
+			this.workers[i].run(jsonModel);
+		}
 	}
 }

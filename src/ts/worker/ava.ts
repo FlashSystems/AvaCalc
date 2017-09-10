@@ -267,7 +267,7 @@ module Ava {
 			return newDevice;
 		}
 
-		private recurseMask(avaCtx: Ctx, progressCallback: ProgressCallback, level: number, currentDeviceIdx: number, outerVisitedMask: boolean[]): void {
+		private recurseMask(avaCtx: Ctx, progressCallback: ProgressCallback, level: number, currentDeviceIdx: number, numThreads: number, outerVisitedMask: boolean[]): void {
 
 			let thisVisitedMask: boolean[];
 			let simulationResult: boolean;
@@ -337,12 +337,19 @@ module Ava {
 					}
 				}
 
-				// If the configuration is alive and well. Add the propability to the over all propability of a good configuration.
-				avaCtx.availability = avaCtx.availability + propability;
+				
+				// Make sure that only the first thread is accounting for the probability of the "all well" configuration.
+				// It must be calculated for every thread because it initializes some informations. But must only be
+				// accumulated once!
+				if ((level > 0) || (currentDeviceIdx == 1)) {
+					// If the configuration is alive and well. Add the propability to the over all propability of a good configuration.
+					avaCtx.availability = avaCtx.availability + propability;
+				}
 
 				// We only try disabling devices that where not already covered by the
 				// outer loop (recursion). Therefore we start at currentDeviceIdx and not at 1.
-				for (let i = currentDeviceIdx; i < this.numDevices; i++) {
+				let stepSize = (level == 0) ? numThreads : 1;
+				for (let i = currentDeviceIdx; i < this.numDevices; i+=stepSize) {
 					// If a progress callback is set, inform him
 					if (progressCallback) {
 						progressCallback(i, this.numDevices);
@@ -350,16 +357,19 @@ module Ava {
 
 					if (avaCtx.deviceMask[i]) {
 						avaCtx.deviceMask[i] = false;
-						this.recurseMask(avaCtx, undefined, level + 1, i, thisVisitedMask);
+						this.recurseMask(avaCtx, undefined, level + 1, i, numThreads, thisVisitedMask);
 						avaCtx.deviceMask[i] = true;
 					}
 				}
 			}
 		}
 
-		calculate(progressCallback: ProgressCallback): Result {
+		calculate(numThreads: number, thisThreadNumber: number, progressCallback?: ProgressCallback): Result {
 			// Create a calculation context
 			let avaCtx = new Ctx(this.numDevices, this.numServices);
+
+			// Check the thread settings
+			if (numThreads <= thisThreadNumber) throw "Invalid number of threads or thread number.";
 
 			// Initialize context information used for init run.
 			avaCtx.reset();
@@ -371,7 +381,7 @@ module Ava {
 			{
 				// Start the simulation by disabling device 1.
 				// The Root-Device (ID 0) is always present and will never be disabled.
-				this.recurseMask(avaCtx, progressCallback, 0, 1, (new Array(this.numDevices).fill(true)));
+				this.recurseMask(avaCtx, progressCallback, 0, thisThreadNumber + 1, numThreads, (new Array(this.numDevices).fill(true)));
 
 				return new Result(avaCtx.availability, avaCtx.singlePointsOfFailure);
 			}

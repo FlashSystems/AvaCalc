@@ -207,6 +207,23 @@ module Model {
 			this.singlePointsOfFailure = singlePointsOfFailure;
 		}
 
+		
+		/**
+		 * @brief Combines two SimResult instances into one.
+		 * @details Combines the two SimResult instances by adding their SPOFs and availability. If one of them is in an error state only this instance is returned without combining anything.
+		 * @param input The SimResult instance that should be combinded with thins one.
+		 * @return Returns a new SimResult instance containing the combination of this one and the input parameter. If one of the instances is in an error state, only this instance is returned.
+		 */
+		combine(input: SimResult): SimResult {
+			if (this.error != null) {
+				return this;
+			} else if (input.error != null) {
+				return input;
+			} else {
+				return new SimResult(this.availability + input.availability, this.singlePointsOfFailure.concat(input.singlePointsOfFailure));
+			}
+		}
+
 		toJSON(): SerializerData {
 			return {
 				"_class": "Result",

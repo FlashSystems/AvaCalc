@@ -46,6 +46,10 @@ module Gui {
 			this.sim.on("done", this.simDone.bind(this));
 			this.sim.on("progress", this.simProgress.bind(this));
 
+			// Show the number of worker threads
+			let numWorkers = this.sim.getNumWorkers();
+			$(".cores").text(numWorkers + " parallel " + (numWorkers > 1 ? "threads" : "thread"));
+
 			// Hook up events
 			$("#menuSave").on("click", this.saveClick.bind(this));
 			$("#menuLoad").on("click", this.loadClick.bind(this));
@@ -228,12 +232,12 @@ module Gui {
 		}
 
 		private simStart(): void {
-			this.simStartTime = (new Date()).getTime();
-
 			$("#progressBar").css("width", "0%");
 			$("#simProgress").animate({
 				'height': "64px"
 			})
+
+			this.simStartTime = (new Date()).getTime();
 		}
 
 		private formatDuration(ms: number): string {
@@ -279,8 +283,6 @@ module Gui {
 
 		private simDone(result: Model.SimResult): void {
 			let duration = (new Date()).getTime() - this.simStartTime;
-
-			console.log(result);
 
 			$("#simProgress").animate({
 				'height': "0"

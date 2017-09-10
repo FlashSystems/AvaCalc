@@ -136,7 +136,7 @@
 	<div id="dlgAbout" class="modal modal-fixed-footer">
 		<div class="modal-content">
 			<h4>Flash&nbsp;Systems Availability Calculator</h4>
-			<p id="version">Version 0.6</p>
+			<p id="version">Version 0.7</p>
 			<img class="logo" src="images/flashlogo.svg" alt="Flash Systems logo"/>
 			<p>Developed by Daniel Goß 2017</p>			
 			<p>Licensed under the <a href="http://www.gnu.de/documents/gpl.en.html">GPL v3</a>.</p>
@@ -144,6 +144,8 @@
 			<p>This is a JavaScript application. All data processing occures localy. No indivation about your design or the executed operations is transmitted back to Flash&nbsp;Systems. To be extra sure you can inspect the source code on <a href="https://github.com/FlashSystems/AvaCalc">GitHub</a>.</p>
 			<h5>Code and Bugs</h5>
 			<p>If you want to get the source code of this application, submit a pull request or report a bug just jump over to <a href="https://github.com/FlashSystems/AvaCalc">GitHub</a></p>
+			<h5>Concurrency</h5>
+			<p>AvaCalc will use <span class="cores"></span> to run the simulation model.</p>
 			<h5>Credits</h5>
 			<p>This software uses the following modules supplied by other people or organisations:</p>
 			<ul id="credits" class="icons">
@@ -266,7 +268,7 @@
 
 	<!-- Progress indicator -->
 	<div class="progressInfo" id="simProgress">
-		<p class="vcenter"><span class="mdi mdi-run" id="runIcon"></span><span>Simulation running...</span></p>
+		<p class="vcenter"><span class="mdi mdi-run" id="runIcon"></span><span>Simulation running using </span><span class="cores"></span><span>...</span></p>
 		<div class="progress">
 			<div class="determinate" id="progressBar" style="width: 0%"></div>
 		</div>
