@@ -1,0 +1,18 @@
+The simulation took 2m 49s 879ms to complete.
+The statistical availability of this design is 99.99130%
+
+Complete as soon as the root-device is activated.
+The simulation took 28s 121ms to complete.
+The statistical availability of this design is 99.99130%
+
+Sort devices containing services to the front of the child list.
+The simulation took 26s 41ms to complete.
+The statistical availability of this design is 99.99130%
+
+Use outerVisitedMask:
+The simulation took 18s 352ms to complete.
+The statistical availability of this design is 99.99130%
+
+Use 4 cores:
+The simulation took 7s 40ms to complete.
+The statistical availability of this design is 99.99130%
