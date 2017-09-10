@@ -125,11 +125,12 @@ module Gui {
 				}
 			});
 
-			dialog.modal("open", {
+			dialog.modal({
 				'ready': (modal: JQuery<Node>) => {
 					modal.find("input.autofocus").first().focus();
 				}
 			});
+			dialog.modal("open");
 		}
 
 		/**
@@ -330,12 +331,13 @@ module Gui {
 
 				// Make sure that the simResultAva Tab is shown when the dialog opens
 				$("#simResultTabs").tabs('select_tab', 'simResultAva');
-				$("#simResult").modal("open", {
+				$("#simResult").modal({
 					'ready': (modal: JQuery<Node>) => {
 						// THe tab will not be selected correctly if it is selected before the dialog opens.
 						modal.find("#simResultTabs").first().tabs('select_tab', 'simResultAva');
 					}
 				});
+				$("#simResult").modal("open");
 			}
 
 			// Restore the simulation button
