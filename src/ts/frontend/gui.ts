@@ -13,7 +13,20 @@ module Gui {
 
 		constructor() {
 			// Initialize Materialize components
-			$(".modal").modal();
+			$(".modal").modal({
+				'ready': (modal: JQuery<Node>) => {
+					// BWA: The active tab will not be selected correctly if
+					// it is selected before the dialog opens.
+					let activeTab = modal.find("ul.tabs li a.active").first();
+					if (activeTab.length > 0) {
+						let tabBar = activeTab.parent().parent();
+						tabBar.tabs('select_tab', activeTab.attr("href").substring(1));
+					}
+
+					// Auto-Focus
+					modal.find("input.autofocus").first().focus();
+				}
+			});
 
 			$('.dropdown-button').dropdown({
 				constrainWidth: false,
@@ -125,11 +138,6 @@ module Gui {
 				}
 			});
 
-			dialog.modal({
-				'ready': (modal: JQuery<Node>) => {
-					modal.find("input.autofocus").first().focus();
-				}
-			});
 			dialog.modal("open");
 		}
 
@@ -331,12 +339,6 @@ module Gui {
 
 				// Make sure that the simResultAva Tab is shown when the dialog opens
 				$("#simResultTabs").tabs('select_tab', 'simResultAva');
-				$("#simResult").modal({
-					'ready': (modal: JQuery<Node>) => {
-						// THe tab will not be selected correctly if it is selected before the dialog opens.
-						modal.find("#simResultTabs").first().tabs('select_tab', 'simResultAva');
-					}
-				});
 				$("#simResult").modal("open");
 			}
 
