@@ -404,7 +404,13 @@ module CytoscapeApi {
 				}
 			});
 
-			device.commit(newDevice);
+			try {
+				device.commit(newDevice);
+			}
+			catch (ex) {
+				this.cy.remove(newDevice);
+				throw ex;
+			}
 		}
 
 		addService(parent: CyDevice, service: CyService): void {
@@ -420,7 +426,13 @@ module CytoscapeApi {
 				}
 			});
 
-			service.commit(newService);
+			try {
+				service.commit(newService);
+			}
+			catch (ex) {
+				this.cy.remove(newService);
+				throw ex;
+			}
 		}
 
 		getNodeById(id: string): CyNode {
