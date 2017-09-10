@@ -40,6 +40,10 @@ module CytoscapeApi {
 			}
 		}
 
+		isBound(): boolean {
+			return (this.node != null);
+		}
+
 		id(): string {
 			if (this.node == null) throw "Can not get id of unbound node";
 			return this.node.id();
@@ -395,6 +399,15 @@ module CytoscapeApi {
 		}
 
 		addDevice(device: CyDevice): void {
+			// If a device is cloned there may be a popp pending for this CyDevice instance.
+			// The popup must be cleared before the instance is reattached to the new node or
+			// the popup will be connected to the new node.
+			if (device.isBound()) {
+				let node = this.cy.getElementById(device.id());
+				node.unselect();
+				this.clearPopup(node);
+			}
+
 			let newDevice = this.cy.add({
 				'group': "nodes",
 				'classes': "device",
@@ -414,6 +427,13 @@ module CytoscapeApi {
 		}
 
 		addService(parent: CyDevice, service: CyService): void {
+			// See addDevice
+			if (service.isBound()) {
+				let node = this.cy.getElementById(service.id());
+				node.unselect();
+				this.clearPopup(node);
+			}
+
 			let parentBBox = parent.boundingBox();
 
 			let newService = this.cy.add({
@@ -451,7 +471,6 @@ module CytoscapeApi {
 		}
 
 		deleteNode (node: CyNode): void	{
-
 			this.getSelectedCyNode().unselect();
 			this.cy.remove(this.cy.getElementById(node.id()));
 		}
@@ -518,7 +537,7 @@ module CytoscapeApi {
 
 		private onSelectNode(event: Cytoscape.Event) {
 			if (this.linkSource != null) {
-				let linkDestination = <Cytoscape.Node>(event.target); //FIXME: Has previously been target[0], why?
+				let linkDestination = <Cytoscape.Node>(event.target);
 				if (this.isLinkable(this.linkSource, linkDestination)) {
 					let linkType = linkDestination.data("type");
 

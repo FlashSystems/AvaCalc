@@ -38,6 +38,8 @@ declare namespace Cytoscape {
 		scratch(key: string, value: any): void;
 		removeScratch(key: string): void;
 
+		unselect(): void;
+
 		boundingBox(): BoundingBox;
 		renderedBoundingBox(): BoundingBox;
 

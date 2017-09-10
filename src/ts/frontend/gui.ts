@@ -217,6 +217,7 @@ module Gui {
 		}
 
 		private cloneNode(node: CytoscapeApi.CyNode): void {
+
 			if (node instanceof CytoscapeApi.CyDevice) {
 				let completions = {
 					'name': this.ca.getNameCompletions(node)
