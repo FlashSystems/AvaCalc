@@ -18,7 +18,8 @@
         zoomDash: true,
         panGrid: true,
         snapToGrid: true,
-        drawGrid: true
+        drawGrid: true,
+        selector: undefined
       };
       
       var functions = {
@@ -197,20 +198,24 @@
           };
           
           var snapAll = function() {
-            cy.nodes().each(function(node) {
+            cy.nodes(options().selector).each(function(node) {
               snapNode(node);
             });
           };
           
           var nodeFreed = function(ev) {
             if(options().snapToGrid) {
-              snapNode(ev.target);
+              if ((options().selector === undefined) || (ev.target.filter(options().selector).length > 0)) {
+                snapNode(ev.target);
+              }
             }
           };
           
           var nodeAdded = function(ev) {
             if(options().snapToGrid) {
-              snapNode(ev.target);
+              if ((options().selector === undefined) || (ev.target.filter(options().selector).length > 0)) {
+                snapNode(ev.target);
+              }
             }
           };
           

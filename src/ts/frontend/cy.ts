@@ -301,7 +301,8 @@ module CytoscapeApi {
 			this.cy.snapToGrid({
 				'gridSpacing': 30,
 				'lineDash': [ 2, 2 ],
-				'zoomDash': true
+				'zoomDash': true,
+				'selector': "node[type = 'device']"
 			});
 
 			// Define which buttons are shown on the popup for each node type.
