@@ -272,6 +272,15 @@ module CytoscapeApi {
 						}
 					},
 
+					// Style for edges in the neighborhood of a selected device
+					{
+						selector: "edge.selneighborhood",
+						style: {
+							'line-color': "#800000",
+							'target-arrow-color': "#800000"
+						}
+					},
+
 
 					// Style for service nodes
 					{
@@ -570,6 +579,8 @@ module CytoscapeApi {
 				} else {			
 					this.showPopup(<Cytoscape.Node>(event.target));
 				}
+
+				(<Cytoscape.Node>(event.target)).neighborhood().addClass("selneighborhood");				
 			}
 		}
 
@@ -579,6 +590,9 @@ module CytoscapeApi {
 
 		private onUnSelect(event: Cytoscape.Event) {
 			this.clearPopup(<Cytoscape.Node>(event.target));
+
+			// Remove all neighborhood markers.
+			(<Cytoscape.Node>(event.target)).neighborhood().removeClass("selneighborhood");			
 		}
 
 		private onDrag(event: Cytoscape.Event) {

@@ -30,7 +30,8 @@ declare namespace Cytoscape {
 	interface Node {
 		id(): string;
 
-		children(selector: string): NodeCollection;
+		children(selector?: string): NodeCollection;
+		neighborhood(selector?: string): NodeCollection;
 
 		data(key: string): any;
 		data(key: string, value: any): void;
@@ -55,6 +56,9 @@ declare namespace Cytoscape {
 		remove(): void;
 		first(): Node;
 		last(): Node;
+
+		addClass(cssClass: string): void;
+		removeClass(cssClass: string): void;
 	}
 }
 
