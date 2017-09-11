@@ -1,3 +1,13 @@
+function checkCalculate(assert, stp, expectedAva) {
+	for (var threads = 1; threads < 10; threads++) {
+		var ava = 0;
+		for (var thread = 0; thread < threads; thread++) {
+			ava += stp.calculate(threads, thread).availability;
+		}
+		assert.equal(ava.toFixed(9), expectedAva, "Model " + threads + " threads");
+	}
+}
+
 QUnit.test( "Ava 1", function( assert ) {
 	var stp = new Ava.Stp();
 
@@ -16,7 +26,7 @@ QUnit.test( "Ava 1", function( assert ) {
 	serviceC1.addParent(serviceA1);
 	serviceC1.addParent(serviceB1);
 
-	assert.equal(stp.calculate().availability.toFixed(9), 0.983030985);
+	checkCalculate(assert, stp, 0.983030985);
 });
 
 QUnit.test( "Ava 2", function( assert ) {
@@ -37,7 +47,7 @@ QUnit.test( "Ava 2", function( assert ) {
 	serviceB1.addParent(serviceA1);
 	serviceB1.addParent(serviceA2);
 
-	assert.equal(stp.calculate().availability.toFixed(9), 0.984999015);
+	checkCalculate(assert, stp, 0.984999015);
 });
 
 QUnit.test( "Ava 3", function( assert ) {
@@ -63,7 +73,7 @@ QUnit.test( "Ava 3", function( assert ) {
 	serviceB2.addParent(serviceA1);
 	serviceB2.addParent(serviceA2);
 
-	assert.equal(stp.calculate().availability.toFixed(9), 0.999774000);
+	checkCalculate(assert, stp, 0.999774000);
 });
 
 QUnit.test( "Two Services with less than 100% contribution", function( assert ) {
@@ -89,7 +99,7 @@ QUnit.test( "Two Services with less than 100% contribution", function( assert ) 
 	serviceB2.addParent(serviceA1);
 	serviceB2.addParent(serviceA2);
 
-	assert.equal(stp.calculate().availability.toFixed(9), 0.970224030);
+	checkCalculate(assert, stp, 0.970224030);
 });
 
 QUnit.test( "Three Services with less than 100% contribution", function( assert ) {
@@ -120,7 +130,7 @@ QUnit.test( "Three Services with less than 100% contribution", function( assert 
 	serviceB3.addParent(serviceA1);
 	serviceB3.addParent(serviceA2);
 
-	assert.equal(stp.calculate().availability.toFixed(9), 0.999330751);
+	checkCalculate(assert, stp, 0.999330751);
 });
 
 QUnit.test( "Services spanning a connection device", function( assert ) {
@@ -134,7 +144,7 @@ QUnit.test( "Services spanning a connection device", function( assert ) {
 
 	serviceB1.addParent(stp.getRootService());
 
-	assert.equal(stp.calculate().availability.toFixed(9), 0.998001);
+	checkCalculate(assert, stp, 0.998001);
 });
 
 QUnit.test( "Multiple services spanning one connection device", function( assert ) {
@@ -158,7 +168,7 @@ QUnit.test( "Multiple services spanning one connection device", function( assert
 	serviceD1.addParent(serviceA1);
 	serviceE1.addParent(serviceB1);
 
-	assert.equal(stp.calculate().availability.toFixed(9), 0.976085876);
+	checkCalculate(assert, stp, 0.976085876);
 });
 
 QUnit.test( "Redundant services spanning one connection device", function( assert ) {
@@ -184,7 +194,7 @@ QUnit.test( "Redundant services spanning one connection device", function( asser
 	serviceC2.addParent(serviceA1);
 	serviceC2.addParent(serviceA2);
 
-	assert.equal(stp.calculate().availability.toFixed(9), 0.979974520);
+	checkCalculate(assert, stp, 0.979974520);
 });
 
 QUnit.test( "Complex setup", function( assert ) {
@@ -240,7 +250,7 @@ QUnit.test( "Complex setup", function( assert ) {
 	serviceD2.addParent(serviceC2);
 	serviceD3.addParent(serviceC3);
 
-	assert.equal(stp.calculate().availability.toFixed(9), 0.863017676);
+	checkCalculate(assert, stp, 0.863017676);
 });
 
 QUnit.test( "Long interconnected chain", function( assert ) {
@@ -286,7 +296,7 @@ QUnit.test( "Long interconnected chain", function( assert ) {
 	serviceD1.addParent(serviceC2);
 	serviceD2.addParent(serviceC2);
 
-	assert.equal(stp.calculate().availability.toFixed(9), 0.999954001);
+	checkCalculate(assert, stp, 0.999954001);
 });
 
 QUnit.test( "Many good configurations", function( assert ) {
@@ -326,5 +336,5 @@ QUnit.test( "Many good configurations", function( assert ) {
 	serviceA1.addParent(stp.getRootService());
 	serviceA2.addParent(stp.getRootService());
 
-	assert.equal(stp.calculate().availability.toFixed(9), 0.999975000);
+	checkCalculate(assert, stp, 0.999975000);
 });
