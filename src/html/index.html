@@ -239,10 +239,19 @@
 		</div>
 	</div>
 
-	<!-- Dropdown Structure -->
+	<!-- Add Dropdown Structure -->
 	<ul id="dropdown1" class="dropdown-content">
 		<li><a id="addDevice"><i class="mdi mdi-server-network"></i>Device</a></li>
 		<li><a id="addService"><i class="mdi mdi-settings"></i>Service</a></li>
+	</ul>
+
+	<!-- Alignment Dropdown Structure -->
+	<ul id="dropdown2" class="dropdown-content">
+		<li><a id="alignHorizontal"><i class="mdi mdi-format-horizontal-align-center"></i>Align horizontal</a></li>
+		<li><a id="alignVertical"><i class="mdi mdi-format-vertical-align-center"></i>Align vertical</a></li>
+		<li class="divider"></li>
+		<li><a id="distributeHorizontal"><i class="mdi mdi-dots-horizontal"></i>Distribute horizontal</a></li>
+		<li><a id="distributeVertical"><i class="mdi mdi-dots-vertical"></i>Distribute vertical</a></li>
 	</ul>
 
 	<!-- Navigation bar -->
@@ -253,6 +262,7 @@
 				<li><a id="menuSimulateStart" class="tooltipped" data-tooltip="Start simulation"><i class="mdi mdi-play"></i></a></li>
 				<li class="hidden"><a id="menuSimulateStop" class="tooltipped" data-tooltip="Stop simulation"><i class="mdi mdi-stop"></i></a></li>
 				<li><a class="dropdown-button tooltipped" data-tooltip="Add a new element" data-activates="dropdown1"><i class="mdi mdi-plus"></i></a></li>
+				<li><a class="dropdown-button tooltipped" data-tooltip="Alignment tools" data-activates="dropdown2"><i class="mdi mdi-ruler"></i></a></li>
 				<li><a id="menuResetZoom" class="tooltipped" data-tooltip="Reset zoom and position"><i class="mdi mdi-find-replace"></i></a></li>
 				<li><a id="menuSave" class="tooltipped" data-tooltip="Save the current design"><i class="mdi mdi-content-save"></i></a></li>
 				<li><a id="menuLoad" class="tooltipped" data-tooltip="Open a saved design" data-position="left"><i class="mdi mdi-open-in-app"></i></a></li>

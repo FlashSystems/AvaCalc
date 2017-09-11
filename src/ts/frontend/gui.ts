@@ -32,7 +32,7 @@ module Gui {
 				constrainWidth: false,
 				gutter: 0,
 				belowOrigin: true,
-				alignment: 'right',
+				alignment: 'right'
 			});
 
 			$('ul.tabs').tabs();
@@ -72,6 +72,10 @@ module Gui {
 			$("#btnClear").on("click", this.clearClick.bind(this));
 			$("#addDevice").on("click", this.onAddDevice.bind(this));
 			$("#addService").on("click", this.onAddService.bind(this));
+			$("#alignHorizontal").on("click", this.onAlignH.bind(this));
+			$("#alignVertical").on("click", this.onAlignV.bind(this));
+			$("#distributeHorizontal").on("click", this.onDistributeH.bind(this));
+			$("#distributeVertical").on("click", this.onDistributeV.bind(this));
 
 			// Hook up hotkeys
 			$(document).on('keypress', null, "d", this.onHotkey.bind(this, "d"));
@@ -396,6 +400,22 @@ module Gui {
 		private clearClick(): void {
 			this.ca.clear();
 			this.ca.addSTP();
+		}
+
+		private onAlignV(): void {
+
+		}
+
+		private onAlignH(): void {
+
+		}
+
+		private onDistributeV(): void {
+
+		}
+
+		private onDistributeH(): void {
+			
 		}
 
 		private onHotkey(key: string): void {
