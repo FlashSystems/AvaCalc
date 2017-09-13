@@ -4,9 +4,12 @@ var uglify = require('gulp-uglify');
 var sourcemaps = require('gulp-sourcemaps');
 var noop = require("gulp-noop");
 var assign = require('object-assign');
+var gutil = require('gulp-util');
+
+var releaseBuild = (gutil.env.release != undefined);
 
 var outputTarget = "ES5";
-var outputBaseDir = gulp.env.release ? "release" : "debug";
+var outputBaseDir = releaseBuild ? "release" : "debug";
 var typeScriptDefaults = {
 	'target': outputTarget,
 	'removeComments': true,
@@ -18,6 +21,9 @@ var typeScriptDefaults = {
 	'typeRoots': [ "src/ts/types", "node_modules/@types" ]
 }
 
+
+gutil.log("Output directory is", gutil.colors.cyan(outputBaseDir));
+
 // Compile the typescript code
 gulp.task("ts-worker", () => {
 	return gulp
@@ -25,13 +31,13 @@ gulp.task("ts-worker", () => {
 			"src/ts/shared/*.ts",
 			"src/ts/worker/*.ts"
 			])
-		.pipe(gulp.env.release ? noop() : sourcemaps.init())
+		.pipe(releaseBuild ? noop() : sourcemaps.init())
 		.pipe(ts(assign(typeScriptDefaults, {
 			'lib': [ "WebWorker", "ES6"],
 			'types': [ ]
 		})))
-		.pipe(gulp.env.release ? uglify() : noop() )
-		.pipe(gulp.env.release ? noop() : sourcemaps.write("../maps"))
+		.pipe(releaseBuild ? uglify() : noop() )
+		.pipe(releaseBuild ? noop() : sourcemaps.write("../maps"))
 		.pipe(gulp.dest(outputBaseDir + "/js/"));
 });
 
@@ -41,13 +47,13 @@ gulp.task("ts-frontend", () => {
 			"src/ts/shared/*.ts",
 			"src/ts/frontend/*.ts"
 			])
-		.pipe(gulp.env.release ? noop() : sourcemaps.init())
+		.pipe(releaseBuild ? noop() : sourcemaps.init())
 		.pipe(ts(assign(typeScriptDefaults, {
 			'lib': [ "ES6", "dom" ],
 			'types': [ "jquery", "jquery-savefile", "materialize-css", "cytoscape", "compat" ],
 		})))
-		.pipe(gulp.env.release ? uglify() : noop())
-		.pipe(gulp.env.release ? noop() : sourcemaps.write("../maps"))
+		.pipe(releaseBuild ? uglify() : noop())
+		.pipe(releaseBuild ? noop() : sourcemaps.write("../maps"))
 		.pipe(gulp.dest(outputBaseDir + "/js/"));
 });
 
@@ -103,7 +109,7 @@ gulp.task("libs-my-js", () => {
 		.src([
 			"src/libs/*.js"
 			])
-		.pipe(gulp.env.release ? uglify() : noop())
+		.pipe(releaseBuild ? uglify() : noop())
 		.pipe(gulp.dest(outputBaseDir + "/js"));
 });
 
