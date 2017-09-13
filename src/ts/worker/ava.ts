@@ -53,14 +53,14 @@ module Ava {
 		private parents: Service[] = [];
 		private serviceName: string;
 		private serviceId: number;
-		private contributionPct: number;
+		private capacityPct: number;
 		// This letiable contains a map of child names and a counter with the number of children of this type.
 		private childrenOfType: ChildTypeMap = {};
 
-		constructor(stp: Stp, serviceName: string, contributionPct: number) {
+		constructor(stp: Stp, serviceName: string, capacityPct: number) {
 			this.serviceName = serviceName;
 			this.serviceId = stp.getNextServiceId();
-			this.contributionPct = contributionPct;
+			this.capacityPct = capacityPct;
 		}
 
 		addChild(newChild: Service): void {
@@ -79,8 +79,8 @@ module Ava {
 			return this.serviceId;
 		}
 
-		getContributionPct(): number {
-			return this.contributionPct;
+		getCapacityPct(): number {
+			return this.capacityPct;
 		}
 
 		isActive(avaCtx: Ctx): boolean {
@@ -128,7 +128,7 @@ module Ava {
 			if (!(childServiceName in avaCtx.activeSvcMap[this.serviceId])) avaCtx.activeSvcMap[this.serviceId][childServiceName] = 0;
 
 			if (avaCtx.activeSvcMap[this.serviceId][childServiceName] < 100) {
-				avaCtx.activeSvcMap[this.serviceId][childServiceName] += childService.getContributionPct();
+				avaCtx.activeSvcMap[this.serviceId][childServiceName] += childService.getCapacityPct();
 
 				// If this service is now active (all dependencies are active) notify its parents
 				if (avaCtx.activeSvcMap[this.serviceId][childServiceName] >= 100) {
@@ -159,10 +159,10 @@ module Ava {
 			return newDevice;
 		}
 
-		newService(serviceName: string, contributionPct: number): Service {
+		newService(serviceName: string, capacityPct: number): Service {
 			if (this.services.some(service => service.getName() === serviceName)) throw "Duplicate service name";
 
-			let newService = new Service(this.stpInstance, serviceName, contributionPct);
+			let newService = new Service(this.stpInstance, serviceName, capacityPct);
 			this.services.push(newService);
 			return newService;
 		}
