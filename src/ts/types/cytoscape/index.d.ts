@@ -8,6 +8,11 @@ declare namespace Cytoscape {
 		h: number;
 	}
 
+	interface Point {
+		x: number;
+		y: number;
+	}
+
 	interface Event {
 		cy: Cytoscape;
 		target: Node | Cytoscape;
@@ -26,10 +31,12 @@ declare namespace Cytoscape {
 	}
 
 	type EventCallback = (event: Event) => void;
+	type PositioningCallback = (ele: Node, i: number) => Point;
 
 	interface Node {
 		id(): string;
 
+		isParent(): boolean;
 		children(selector?: string): NodeCollection;
 		neighborhood(selector?: string): NodeCollection;
 
@@ -48,6 +55,11 @@ declare namespace Cytoscape {
 		source(): Node;
 		target(): Node;
 
+		position(): Point;
+		position(point: Point): void;
+		position(positioningCallback: PositioningCallback): void;
+		shift(offset: Point): void;
+
 		isNode(): boolean;
 	}
 
@@ -56,6 +68,9 @@ declare namespace Cytoscape {
 		remove(): void;
 		first(): Node;
 		last(): Node;
+
+		positions(point: Point): void;
+		positions(positioningCallback: PositioningCallback): void;
 
 		addClass(cssClass: string): void;
 		removeClass(cssClass: string): void;

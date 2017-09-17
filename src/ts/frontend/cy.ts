@@ -1,10 +1,40 @@
 module CytoscapeApi {
+
+	export enum AlignMode { Vertical, Horizontal };
+
+	enum MoveMode { X, Y };
+
+	class CyPoint implements Cytoscape.Point {
+		public x: number;
+		public y: number;
+
+		constructor();
+
+		constructor(x: Cytoscape.Point);
+
+		constructor(x: number, y: number);
+
+		constructor(x: number|Cytoscape.Point = 0, y: number = 0) {
+			if ((x instanceof Object) && (x.hasOwnProperty("x")) && (x.hasOwnProperty("y"))) {
+				this.x = (<Cytoscape.Point>x).x;
+				this.y = (<Cytoscape.Point>x).y;
+			} else {
+				this.x = (<number>x);
+				this.y = (<number>y);
+			}
+		}
+
+		toPlainObject(): Cytoscape.Point {
+			return { "x": this.x, "y": this.y };
+		}
+	}
+
 	class CyNodeData {
 		[key: string]: string | number;	//FIXME: I don't linke this construct. It's not explicit enough.
 
 		public readonly name: string;
 		public availability?: number;	//FIXME: I don't like the sound of this.
-		public capacity?: number;	//FIXME: I don't like the sound of this.
+		public capacity?: number;		//FIXME: I don't like the sound of this.
 
 		constructor(name: string = "") {
 			this.name = name;			
@@ -142,6 +172,7 @@ module CytoscapeApi {
 
 	export class CytoscapeApi extends Events {
 		private cy: Cytoscape;
+		private selectStack: Cytoscape.Node[] = [];
 		private buttonsForType: ButtonsTypeMap = {};
 		private linkSource: Cytoscape.Node | null = null;
 
@@ -545,7 +576,77 @@ module CytoscapeApi {
 			return model;
 		}
 
-		private onSelectNode(event: Cytoscape.Event) {
+		private moveNodeTo(node: Cytoscape.Node, newPosition: Cytoscape.Point, moveMode: MoveMode): void {
+			let nodePos = node.position();
+
+			let nodeOffset = new CyPoint();
+			if (moveMode ==  MoveMode.Y) {
+				nodeOffset.y = newPosition.y - nodePos.y;
+			} else {
+				nodeOffset.x = newPosition.x - nodePos.x;
+			}
+
+			if (node.isParent()) {
+				for (let child of node.children()) {
+					child.shift(nodeOffset.toPlainObject());
+				}
+			} else {
+				node.shift(nodeOffset.toPlainObject());
+			}
+		}
+
+		alignSelected(alignment: AlignMode): void {
+			// Alignning is only possible with a least 2 selected elements.
+			if (this.selectStack.length < 2) return;
+
+			// Get the position of the first node in the select stack.
+			let masterPos = this.selectStack[0].position();
+
+			let moveMode = alignment === AlignMode.Horizontal?MoveMode.Y:MoveMode.X;
+
+			for (let node of this.cy.$('node:selected')) {
+				this.moveNodeTo(node, masterPos, moveMode);
+			}
+		}
+
+		distributeSelected(alignment: AlignMode): void {
+			// To distribute anything at least 3 elements have to be selected.
+			if (this.selectStack.length < 3) return;
+
+			let selectedNodes: Cytoscape.Node[] = [];
+			for (let node of this.cy.$('node:selected')) {
+				selectedNodes.push(node);
+			}
+
+			selectedNodes.sort((nodeA: Cytoscape.Node, nodeB: Cytoscape.Node) => {
+				let primaryPosA = alignment === AlignMode.Horizontal?nodeA.position().x:nodeA.position().y;
+				let primaryPosB = alignment === AlignMode.Horizontal?nodeB.position().x:nodeB.position().y;
+				let secondaryPosA = alignment === AlignMode.Horizontal?nodeA.position().y:nodeA.position().x;
+				let secondaryPosB = alignment === AlignMode.Horizontal?nodeB.position().y:nodeB.position().x;
+
+				let primaryDiff = primaryPosA - primaryPosB;
+				if (primaryDiff != 0) {
+					return primaryDiff;
+				} else {
+					return secondaryPosA - secondaryPosB;
+				}
+			});
+
+			let numSpaces = selectedNodes.length - 1;
+			let startPos = alignment === AlignMode.Horizontal?selectedNodes[0].position().x:selectedNodes[0].position().y;
+			let endPos = alignment === AlignMode.Horizontal?selectedNodes[numSpaces].position().x:selectedNodes[numSpaces].position().y;
+
+			let spacing = (endPos - startPos) / numSpaces;
+
+			let moveMode = alignment === AlignMode.Horizontal?MoveMode.X:MoveMode.Y;
+
+			for (let node of selectedNodes) {
+				this.moveNodeTo(node, new CyPoint(startPos, startPos), moveMode);
+				startPos += spacing;
+			}
+		}
+
+		private onSelectNode(event: Cytoscape.Event) {			
 			if (this.linkSource != null) {
 				let linkDestination = <Cytoscape.Node>(event.target);
 				if (this.isLinkable(this.linkSource, linkDestination)) {
@@ -572,6 +673,10 @@ module CytoscapeApi {
 				$("#cycanvas").css("cursor", "");
 				this.linkSource = null;
 			} else {
+				// Save the node on the select stack. This stack is used to reconstruct the
+				// order of node selection for alignment.
+				this.selectStack.push(<Cytoscape.Node>(event.target));
+
 				if (this.getSelectedCyNode().length != 1)
 				{
 					for (let node of this.getSelectedCyNode())  {
@@ -581,7 +686,7 @@ module CytoscapeApi {
 					this.showPopup(<Cytoscape.Node>(event.target));
 				}
 
-				(<Cytoscape.Node>(event.target)).neighborhood().addClass("selneighborhood");				
+				(<Cytoscape.Node>(event.target)).neighborhood().addClass("selneighborhood");
 			}
 		}
 
@@ -590,10 +695,17 @@ module CytoscapeApi {
 		}
 
 		private onUnSelect(event: Cytoscape.Event) {
-			this.clearPopup(<Cytoscape.Node>(event.target));
+			let node = <Cytoscape.Node>(event.target);
+
+			this.clearPopup(node);
+
+			// Remove the un-selected node from the selectStack
+			this.selectStack = this.selectStack.filter((item: Cytoscape.Node): boolean => {
+				return item.id() != node.id();
+			});
 
 			// Remove all neighborhood markers.
-			(<Cytoscape.Node>(event.target)).neighborhood().removeClass("selneighborhood");			
+			node.neighborhood().removeClass("selneighborhood");			
 		}
 
 		private onDrag(event: Cytoscape.Event) {

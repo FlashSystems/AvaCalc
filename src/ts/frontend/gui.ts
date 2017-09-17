@@ -403,19 +403,19 @@ module Gui {
 		}
 
 		private onAlignV(): void {
-
+			this.ca.alignSelected(CytoscapeApi.AlignMode.Vertical);
 		}
 
 		private onAlignH(): void {
-
+			this.ca.alignSelected(CytoscapeApi.AlignMode.Horizontal);
 		}
 
 		private onDistributeV(): void {
-
+			this.ca.distributeSelected(CytoscapeApi.AlignMode.Vertical);
 		}
 
 		private onDistributeH(): void {
-			
+			this.ca.distributeSelected(CytoscapeApi.AlignMode.Horizontal);			
 		}
 
 		private onHotkey(key: string): void {
