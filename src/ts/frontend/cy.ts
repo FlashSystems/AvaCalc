@@ -120,8 +120,10 @@ module CytoscapeApi {
 
 			if (node != null) {
 				this.data.availability = <number>(this.node.data("ava")) * 100;
+				this.data.flavour = this.node.data("flavour");
 			} else {
 				this.data.availability = 99.5;
+				this.data.flavour = "server";
 			}
 		}
 
@@ -140,6 +142,7 @@ module CytoscapeApi {
 			super.commit(node);		
 
 			this.node.data("ava", availability / 100);
+			this.node.data("flavour", this.data.flavour);
 		}
 	}
 
@@ -231,7 +234,6 @@ module CytoscapeApi {
 						selector: "node.device",
 						style: {
 							'shape': "rectangle",
-							'background-image': [ "images/device.svg" ],
 							'width': "12em",
 							'min-width': "12em",
 							'height': "4em",
@@ -241,6 +243,32 @@ module CytoscapeApi {
 							'background-height': "80%",						
 							'compound-sizing-wrt-labels': "include",
 						}
+					},
+
+					// Styles for the different device node types
+					{
+						selector: "node.device[flavour='server']",
+						style: { 'background-image': [ "images/device-server.svg" ] }
+					},
+					{
+						selector: "node.device[flavour='network']",
+						style: { 'background-image': [ "images/device-network.svg" ] }
+					},
+					{
+						selector: "node.device[flavour='gateway']",
+						style: { 'background-image': [ "images/device-gateway.svg" ] }
+					},
+					{
+						selector: "node.device[flavour='power']",
+						style: { 'background-image': [ "images/device-power.svg" ] }
+					},
+					{
+						selector: "node.device[flavour='connection']",
+						style: { 'background-image': [ "images/device-connection.svg" ] }
+					},
+					{
+						selector: "node.device[flavour='module']",
+						style: { 'background-image': [ "images/device-module.svg" ] }
 					},
 
 					// Style for device nodes containing services.
@@ -555,7 +583,9 @@ module CytoscapeApi {
 
 
 			for (let node of this.cy.nodes('node[type = "device"]')) {
-				let device = new Model.Device(node.id(), node.data("ava"));
+				// If the flavour of the device is "module" it can not be a single point of failure.
+				// Therefore it is marked as "self redundant".
+				let device = new Model.Device(node.id(), node.data("ava"), (node.data("flavour") === "module"));
 
 				let services = node.children('node[type = "service"]').map((node: Cytoscape.Node) => {
 					device.addService(new Model.Service(node.id(), node.data("label"), node.data("capacity")));

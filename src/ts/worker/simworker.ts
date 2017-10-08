@@ -29,7 +29,7 @@ namespace SimWorker {
 
 			// Create all devices
 			for (let device of model.devices) {
-				let deviceInstance = stp.newDevice(device.ava);
+				let deviceInstance = stp.newDevice(device.ava, device.selfRedundant);
 				devices[device.id] = deviceInstance;
 				deviceIdMap[deviceInstance.id()] = device.id;
 

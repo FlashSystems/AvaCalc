@@ -20,6 +20,7 @@ module Ava {
 	class Ctx {
 		public deviceMask: boolean[];
 		public deviceAva: number[];
+		public deviceNoSpof: boolean[];
 		public visitedDevices: boolean[];
 		public requiredSvcCount: number[];
 		public activeSvcCount: number[];
@@ -30,6 +31,7 @@ module Ava {
 		constructor(numDevices: number, numServices: number) {
 			this.deviceMask = new Array(numDevices);
 			this.deviceAva = new Array(numDevices);
+			this.deviceNoSpof = new Array(numDevices);
 			this.visitedDevices = new Array(numDevices);
 			this.requiredSvcCount = new Array(numServices);
 			this.activeSvcCount =  new Array(numServices);
@@ -146,15 +148,17 @@ module Ava {
 		private stpInstance: Stp;
 		private ava: number;
 		private deviceId: number;
+		private selfRedundant: boolean;
 
-		constructor(stp: Stp, ava: number) {
+		constructor(stp: Stp, ava: number, selfRedundant: boolean) {
 			this.stpInstance = stp;
 			this.ava = ava;
+			this.selfRedundant = selfRedundant;
 			this.deviceId = this.stpInstance.getNextDeviceId();
 		}
 
-		newDevice(ava: number): Device {
-			let newDevice = this.stpInstance.newDevice(ava);
+		newDevice(ava: number, selfRedundant: boolean = false): Device {
+			let newDevice = this.stpInstance.newDevice(ava, selfRedundant);
 			this.link(newDevice);
 			return newDevice;
 		}
@@ -189,6 +193,9 @@ module Ava {
 
 			// Save the availability value for this device
 			avaCtx.deviceAva[this.deviceId] = this.ava;
+
+			// If the device is self redundant it can not be a single point of failure
+			avaCtx.deviceNoSpof[this.deviceId] = this.selfRedundant;
 
 			// Sort children that have services to the front.
 			// This, in combination with aborting the search as soon as the STP gets activated,
@@ -237,7 +244,7 @@ module Ava {
 		private rootService: Service;
 
 		constructor() {
-			this.rootDevice = new Device(this, 1);
+			this.rootDevice = new Device(this, 1, true);
 			this.rootService = new Service(this, ".", 100);
 		}
 
@@ -261,9 +268,9 @@ module Ava {
 			return this.rootService;
 		}
 
-		newDevice(ava: number): Device {
+		newDevice(ava: number, selfRedundant: boolean): Device {
 			if (isNaN(ava) || !isFinite(ava) || ava < 0 || ava > 1) throw "Invalid argument";
-			let newDevice = new Device(this, ava);
+			let newDevice = new Device(this, ava, selfRedundant);
 			return newDevice;
 		}
 
@@ -305,7 +312,7 @@ module Ava {
 				if (!simulationResult && (level === 1)) {
 					// Search for the disabled device and put it's number into the SPOF list.
 					for (let i = 1; i < this.numDevices; i++) {
-						if (!avaCtx.deviceMask[i]) {
+						if (!(avaCtx.deviceMask[i] || avaCtx.deviceNoSpof[i])) {
 							avaCtx.singlePointsOfFailure.push(i);
 							break;
 						}
@@ -320,8 +327,6 @@ module Ava {
 				simulationResult = true;
 				thisVisitedMask = outerVisitedMask;
 			}
-
-			//console.log("Over all propability of this " + (simulationResult?"good":"bad") + " configuration: " + avaCtx.propability.toFraction());
 
 			// If the simulation was successfull, try disabling one
 			// more device

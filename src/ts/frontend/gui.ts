@@ -42,6 +42,8 @@ module Gui {
 				'delay': 500
 			});
 
+			$('select').material_select();
+
 			// Initialize Cytoscape
 			this.ca = new CytoscapeApi.CytoscapeApi();
 
@@ -76,6 +78,7 @@ module Gui {
 			$("#alignVertical").on("click", this.onAlignV.bind(this));
 			$("#distributeHorizontal").on("click", this.onDistributeH.bind(this));
 			$("#distributeVertical").on("click", this.onDistributeV.bind(this));
+			$("#flavour").on("change", this.onFlavourChange.bind(this));
 
 			// Hook up hotkeys
 			$(document).on('keypress', null, "d", this.onHotkey.bind(this, "d"));
@@ -87,27 +90,36 @@ module Gui {
 		private editDialog(dialog: JQuery<Node>, values: EditValueMap, autoComplete: Completions, okCallback: (values: EditValueMap) => boolean): void {
 			for (let property in values) {
 				let inputBox = dialog.find("input[data-link=" + property + "]")
-				inputBox.val(values[property]);
+				if (inputBox.length > 0) {
+					inputBox.val(values[property]);
 
-				// If the input box has the autocomplete class initialize the autocomplete
-				// function with the values from the autoComplete object.
-				if (inputBox.hasClass("autocomplete")) {
-					if (property in autoComplete) {
-						let completions: StringMap<null> = {};
+					// If the input box has the autocomplete class initialize the autocomplete
+					// function with the values from the autoComplete object.
+					if (inputBox.hasClass("autocomplete")) {
+						if (property in autoComplete) {
+							let completions: StringMap<null> = {};
 
-						for (let value of autoComplete[property]) {
-							completions[value] = null;
+							for (let value of autoComplete[property]) {
+								completions[value] = null;
+							}
+
+							inputBox.autocomplete({
+								'data': completions,
+								'limit': 10,
+								'minLength': 2
+							});
+						} else {
+							console.log("Autocomplete values missing for #" + property);
 						}
-
-						inputBox.autocomplete({
-							'data': completions,
-							'limit': 10,
-							'minLength': 2
-						});
-					} else {
-						console.log("Autocomplete values missing for #" + property);
 					}
-				}
+				} else {
+					let selectBox = dialog.find("select[data-link=" + property + "]");
+					if (selectBox.length > 0) {
+						selectBox.val(values[property]);
+						selectBox.trigger("change");
+						selectBox.material_select();
+					}
+				}				
 			}
 
 			dialog.find("input.allowenter").off("keypress").on("keypress", (e) => {
@@ -121,6 +133,9 @@ module Gui {
 			dialog.find("a.btn-ok").off("click").on("click", () => {
 				for (let property in values) {
 					let element = dialog.find("input[data-link=" + property + "]");
+					if (element.length === 0) {
+						element = dialog.find("select[data-link=" + property + "]");
+					}
 					if (element.length > 0) {
 						values[property] = <string>(element.val());
 					}
@@ -370,6 +385,7 @@ module Gui {
 			};
 
 			this.editDialog($("#dlgEditDevice"), device.getData(), completions, (data: StringMap<string>) => {
+				console.log(data);
 				this.ca.addDevice(device);
 
 				return true;
@@ -416,6 +432,14 @@ module Gui {
 
 		private onDistributeH(): void {
 			this.ca.distributeSelected(CytoscapeApi.AlignMode.Horizontal);			
+		}
+
+		private onFlavourChange(): void {
+			if ($("#flavour").val() === "module") {
+				$("#flavourModuleInfo").show();
+			} else {
+				$("#flavourModuleInfo").hide();
+			}
 		}
 
 		private onHotkey(key: string): void {

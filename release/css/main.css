@@ -15,6 +15,10 @@ h4 i.mdi {
 	margin: 0 0.5em 0 0.5em;
 }
 
+h4.mdi::before {
+	margin-right: 0.25em;
+}
+
 #toast-container div.error {
 	background-color: #600000;
 }

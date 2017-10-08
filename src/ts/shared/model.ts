@@ -68,6 +68,7 @@ module Model {
 	export class Device {
 		public readonly id: string;
 		public readonly ava: number;
+		public readonly selfRedundant: boolean;
 
 		private serviceList: Service[] = [];
 
@@ -75,9 +76,10 @@ module Model {
 			return this.serviceList.slice();	// Return a copy of the list to prevent accidential changes.
 		}
 
-		constructor(id: string, ava: number) {
+		constructor(id: string, ava: number, selfRedundant: boolean) {
 			this.id = id;
 			this.ava = ava;
+			this.selfRedundant = selfRedundant;
 		}
 
 		addService(service: Service): void {
@@ -89,6 +91,7 @@ module Model {
 				"_class": "Device",
 				"id": this.id,
 				"ava": this.ava,
+				"selfRedundant": this.selfRedundant,
 				"services": this.serviceList
 			};
 		}
@@ -102,7 +105,7 @@ module Model {
 		 * @param value Unserialized proto object.
 		 */
 		static fromJSON(value: SerializerData): Device {
-			let device = new Device(value.id, value.ava);
+			let device = new Device(value.id, value.ava, value.selfRedundant);
 
 			for (let service of value.services) device.addService(service);
 
