@@ -270,6 +270,14 @@ module CytoscapeApi {
 						selector: "node.device[flavour='module']",
 						style: { 'background-image': [ "images/device-module.svg" ] }
 					},
+					{
+						selector: "node.device[flavour='storage']",
+						style: { 'background-image': [ "images/device-storage.svg" ] }
+					},
+					{
+						selector: "node.device[flavour='fabric']",
+						style: { 'background-image': [ "images/device-fabric.svg" ] }
+					},
 
 					// Style for device nodes containing services.
 					// This hides the background image.
