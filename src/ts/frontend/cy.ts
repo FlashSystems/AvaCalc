@@ -240,7 +240,7 @@ module CytoscapeApi {
 							'min-height': "4em",
 							'background-color': "#a0c0ff",
 							'background-width': "80%",
-							'background-height': "80%",						
+							'background-height': "80%",
 							'compound-sizing-wrt-labels': "include",
 						}
 					},
@@ -284,7 +284,11 @@ module CytoscapeApi {
 					{
 						selector: "$node.device > node",
 						style: {
-							'background-image': []
+							'background-position-x': -33,
+							'background-position-y': 0,
+							'background-width': "32px",
+							'background-height': "32px",
+							'background-clip': "none"
 						}
 					},
 
