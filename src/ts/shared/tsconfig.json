@@ -1,0 +1,24 @@
+// Lib is redefined by the frontend and worker parts because
+// the worker part needs to include Webworker before ES6.
+{
+	"compilerOptions": {
+		"target": "ES5",
+		"module": "AMD",
+		"moduleResolution": "node",
+		"sourceMap": true,
+		"removeComments": true,
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitThis": true,
+		"alwaysStrict": true,
+		"typeRoots": [ "../types" ],
+		"types": [ ],
+		"baseUrl": "../../..",
+		"lib": [ "ES6" ],
+	    "paths": {
+	    	"*": [ "libs/*/index", "node_modules/*" ]
+	    	//"ts-serializer": ["node_modules/ts-serializer/dist/ts-serializer"] // This mapping is relative to "baseUrl"
+    	}
+	}
+}

@@ -1,4 +1,4 @@
-class Events {
+export class Events {
 	events: Events.EventMap;
 
 	constructor() {
@@ -29,7 +29,7 @@ class Events {
 	}
 }
 
-namespace Events {
+export namespace Events {
 	export type EventCallback = (eventData: any) => void;
 
 	export class EventMap {

@@ -1,5 +1,7 @@
-importScripts("ava.js")
-importScripts("model.js")
+importScripts("../js/require.js")
+
+import * as Ava from "./ava"
+import * as Model from "../shared/model"
 
 namespace SimWorker {
 	class StringMap<T> {

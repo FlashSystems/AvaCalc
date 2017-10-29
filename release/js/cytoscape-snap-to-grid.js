@@ -1,1 +1,292 @@
-!function(t){"use strict";var n=function(n){n&&n("core","snapToGrid",function(n){var i=this,o=n,e=i.container(),r={stackOrder:-1,gridSpacing:40,strokeStyle:"#CCCCCC",lineWidth:1,lineDash:[5,8],zoomDash:!0,panGrid:!0,snapToGrid:!0,drawGrid:!0,selector:void 0},a={snapOn:function(){t(this).trigger("snaptogrid.snapon")},snapOff:function(){t(this).trigger("snaptogrid.snapoff")},gridOn:function(){t(this).trigger("snaptogrid.gridon")},gridOff:function(){t(this).trigger("snaptogrid.gridoff")},refresh:function(){t(this).trigger("snaptogrid.refresh")},option:function(n,i){var o=t(this),e=o.data("snapToGrid");if(null!=e){var r=e.options;if(void 0===i){if(typeof n!=typeof{})return r[n];var a=n;r=t.extend(!0,{},defaults,a),e.options=r}else r[n]=i;return o.data("snapToGrid",e),o.trigger("snaptogrid.refresh"),o}},init:function(){var o,e=t("<canvas></canvas>"),a=t(this),s=t.extend(!0,{},r,n);a.data("snapToGrid",s);var d,f=function(){return d||(d=a.data("snapToGrid"))},p=function(){e.attr("height",a.height()).attr("width",a.width()).css({position:"absolute",top:0,left:0,"z-index":f().stackOrder}),setTimeout(function(){var t=e.offset(),n=a.offset();e.attr("height",a.height()).attr("width",a.width()).css({top:-(t.top-n.top),left:-(t.left-n.left)}),c()},0)},c=function(){if(g(),f().drawGrid){var t=i.zoom(),n=a.width(),e=a.height(),r=f().gridSpacing*t,s=i.pan(),d=s.x%r,p=s.y%r;if(o.strokeStyle=f().strokeStyle,o.lineWidth=f().lineWidth,f().zoomDash){for(var c=f().lineDash.slice(),h=0;h<c.length;h++)c[h]=f().lineDash[h]*t;o.setLineDash(c)}else o.setLineDash(f().lineDash);f().panGrid?o.lineDashOffset=-s.y:o.lineDashOffset=0;for(h=d;h<n;h+=r)o.beginPath(),o.moveTo(h,0),o.lineTo(h,e),o.stroke();f().panGrid?o.lineDashOffset=-s.x:o.lineDashOffset=0;for(h=p;h<e;h+=r)o.beginPath(),o.moveTo(0,h),o.lineTo(n,h),o.stroke()}},g=function(){var t=a.width(),n=a.height();o.clearRect(0,0,t,n)},h=function(t){var n=t.position(),i=Math.floor(n.x/f().gridSpacing),o=Math.floor(n.y/f().gridSpacing);t.position({x:(i+.5)*f().gridSpacing,y:(o+.5)*f().gridSpacing})},l=function(){i.nodes(f().selector).each(function(t){h(t)})},u=function(t){f().snapToGrid&&(void 0===f().selector||t.target.filter(f().selector).length>0)&&h(t.target)},y=function(t){f().snapToGrid&&(void 0===f().selector||t.target.filter(f().selector).length>0)&&h(t.target)};a.append(e),t(window).on("resize",p),a.on("snaptogrid.snapon",function(){f().snapToGrid=!0,l()}),a.on("snaptogrid.snapoff",function(){f().snapToGrid=!1}),a.on("snaptogrid.gridon",function(){f().drawGrid=!0,c()}),a.on("snaptogrid.gridoff",function(){f().drawGrid=!1,c()}),a.on("snaptogrid.refresh",p),o=e[0].getContext("2d"),i.ready(function(){p(),f().snapToGrid&&l(),i.on("zoom",c),i.on("pan",c),i.on("free",u),i.on("add",y)})}};return a[o]?a[o].apply(e,Array.prototype.slice.call(arguments,1)):"object"!=typeof o&&o?(console.error("No such function `"+o+"` for snapToGrid"),this):a.init.apply(e,arguments)})};"undefined"!=typeof module&&module.exports&&(module.exports=n),"undefined"!=typeof define&&define.amd&&define("cytoscape-snap-to-grid",function(){return n}),"undefined"!=typeof cytoscape&&n(cytoscape)}("undefined"!=typeof jQuery?jQuery:null);
+;(function($){ 'use strict';
+
+  // registers the extension on a cytoscape lib ref
+  var register = function( cytoscape ){
+
+    if( !cytoscape ){ return; } // can't register if cytoscape unspecified
+
+    cytoscape( 'core', 'snapToGrid', function(params){
+      var cy = this;
+      var fn = params;
+      var container = cy.container();
+      var defaultParams = {
+        stackOrder: -1,
+        gridSpacing: 40,
+        strokeStyle: '#CCCCCC',
+        lineWidth: 1.0,
+        lineDash: [5,8],
+        zoomDash: true,
+        panGrid: true,
+        snapToGrid: true,
+        drawGrid: true,
+        selector: undefined
+      };
+      
+      var functions = {
+        //Enables snap-to-grid:
+        snapOn: function() {
+          var $container = $( this );
+          $container.trigger( 'snaptogrid.snapon' );
+        },
+        
+        //Disables snap-to-grid:
+        snapOff: function() {
+          var $container = $( this );
+          $container.trigger( 'snaptogrid.snapoff' );
+        },
+        
+        //Enables the grid drawing:
+        gridOn: function() {
+          var $container = $( this );
+          $container.trigger( 'snaptogrid.gridon' );
+        },
+        
+        //Disables the grid drawing:
+        gridOff: function() {
+          var $container = $( this );
+          $container.trigger( 'snaptogrid.gridoff' );
+        },
+        
+        //Redraws the grid:
+        refresh: function() {
+          var $container = $( this );
+          $container.trigger( 'snaptogrid.refresh' );
+        },
+      
+        //Gets or sets an option:
+        option: function( name, value ) {
+          var $container = $( this );
+          var data = $container.data( 'snapToGrid' );
+  
+          if( data == null ) {
+            return;
+          }
+  
+          var options = data.options;
+  
+          if( value === undefined ) {
+              if( typeof name == typeof {} ) {
+              var newOpts = name;
+              options = $.extend( true, {}, defaults, newOpts );
+              data.options = options;
+            } else {
+              return options[ name ];
+            }
+          } else {
+            options[ name ] = value;
+          }
+  
+          $container.data( 'snapToGrid', data );
+          $container.trigger( 'snaptogrid.refresh' );
+  
+          return $container;
+        },
+      
+        //Initialization function:
+        init: function() {
+          var $canvas = $( '<canvas></canvas>' );
+          var $container = $( this );
+          var ctx;
+          
+          var opts = $.extend( true, {}, defaultParams, params);
+          $container.data( 'snapToGrid', opts );
+          
+          var optionsCache;
+          var options = function() {
+            return optionsCache || ( optionsCache = $container.data( 'snapToGrid' ) );
+          };
+          
+          var resizeCanvas = function() {
+            $canvas
+              .attr( 'height', $container.height() )
+              .attr( 'width', $container.width() )
+              .css( {
+                'position': 'absolute',
+                'top': 0,
+                'left': 0,
+                'z-index': options().stackOrder
+              } );
+              
+          setTimeout( function() {
+            var canvasBb = $canvas.offset();
+            var containerBb = $container.offset();
+            
+            $canvas
+              .attr( 'height', $container.height() )
+              .attr( 'width', $container.width() )
+                .css( {
+                  'top': -( canvasBb.top - containerBb.top ),
+                  'left': -( canvasBb.left - containerBb.left )
+                } );
+            drawGrid();
+          }, 0 );
+          };
+          
+          var drawGrid = function() {
+            clearDrawing();
+            
+            if(!options().drawGrid) {
+              return;
+            }
+            
+            var zoom = cy.zoom();
+            var canvasWidth = $container.width();
+            var canvasHeight = $container.height();
+            var increment = options().gridSpacing*zoom;
+            var pan = cy.pan();
+            var initialValueX = pan.x%increment;
+            var initialValueY = pan.y%increment;
+            
+            ctx.strokeStyle = options().strokeStyle;
+            ctx.lineWidth = options().lineWidth;
+            
+            if(options().zoomDash) {
+              var zoomedDash = options().lineDash.slice();
+              
+              for(var i = 0; i < zoomedDash.length; i++) {
+                zoomedDash[ i ] = options().lineDash[ i ]*zoom;
+              }
+              ctx.setLineDash( zoomedDash );
+            } else {
+              ctx.setLineDash( options().lineDash );
+            }
+            
+            if(options().panGrid) {
+              ctx.lineDashOffset = -pan.y;
+            } else {
+              ctx.lineDashOffset = 0;
+            }
+            
+            for(var i = initialValueX; i < canvasWidth; i += increment) {
+              ctx.beginPath();
+                    ctx.moveTo( i, 0 );
+                    ctx.lineTo( i, canvasHeight );
+                    ctx.stroke();
+            }
+            
+            if(options().panGrid) {
+              ctx.lineDashOffset = -pan.x;
+            } else {
+              ctx.lineDashOffset = 0;
+            }
+            
+            for(var i = initialValueY; i < canvasHeight; i += increment) {
+              ctx.beginPath();
+                    ctx.moveTo( 0, i );
+                    ctx.lineTo( canvasWidth, i );
+                    ctx.stroke();
+            }
+          };
+          
+          var clearDrawing = function() {
+            var width = $container.width();
+                var height = $container.height();
+
+                ctx.clearRect( 0, 0, width, height );
+          };
+          
+          var snapNode = function(node) {
+            var pos = node.position();
+            
+            var cellX = Math.floor(pos.x/options().gridSpacing);
+            var cellY = Math.floor(pos.y/options().gridSpacing);
+            
+            node.position( {
+              x: (cellX + 0.5)*options().gridSpacing,
+              y: (cellY + 0.5)*options().gridSpacing
+            } );
+          };
+          
+          var snapAll = function() {
+            cy.nodes(options().selector).each(function(node) {
+              snapNode(node);
+            });
+          };
+          
+          var nodeFreed = function(ev) {
+            if(options().snapToGrid) {
+              if ((options().selector === undefined) || (ev.target.filter(options().selector).length > 0)) {
+                snapNode(ev.target);
+              }
+            }
+          };
+          
+          var nodeAdded = function(ev) {
+            if(options().snapToGrid) {
+              if ((options().selector === undefined) || (ev.target.filter(options().selector).length > 0)) {
+                snapNode(ev.target);
+              }
+            }
+          };
+          
+          var snapOn = function() {
+            options().snapToGrid = true;
+            snapAll();
+          };
+          
+          var snapOff = function() {
+            options().snapToGrid = false;
+          };
+          
+          var gridOn = function() {
+            options().drawGrid = true;
+            drawGrid();
+          };
+          
+          var gridOff = function() {
+            options().drawGrid = false;
+            drawGrid();
+          };
+          
+          $container.append( $canvas );
+          $( window ).on( 'resize', resizeCanvas );
+          $container.on( 'snaptogrid.snapon', snapOn );
+          $container.on( 'snaptogrid.snapoff', snapOff );
+          $container.on( 'snaptogrid.gridon', gridOn );
+          $container.on( 'snaptogrid.gridoff', gridOff );
+          $container.on( 'snaptogrid.refresh', resizeCanvas );
+          ctx = $canvas[ 0 ].getContext( '2d' );
+          
+          cy.ready(function() {
+            resizeCanvas();
+            
+            if(options().snapToGrid) {
+              snapAll();
+            }
+            
+            cy.on( 'zoom', drawGrid );
+            cy.on( 'pan', drawGrid );
+            cy.on( 'free', nodeFreed );
+            cy.on( 'add', nodeAdded );
+          });
+        }
+      };
+      
+      if( functions[ fn ] ) {
+        return functions[ fn ].apply( container, Array.prototype.slice.call( arguments, 1 ) );
+      } else if( typeof fn == 'object' || !fn ) {
+        return functions.init.apply( container, arguments );
+      } else {
+        console.error( 'No such function `' + fn + '` for snapToGrid' );
+      }
+
+      return this; // chainability
+    } );
+
+  };
+
+  if( typeof module !== 'undefined' && module.exports ){ // expose as a commonjs module
+    module.exports = register;
+  }
+
+  if( typeof define !== 'undefined' && define.amd ){ // expose as an amd/requirejs module
+    define('cytoscape-snap-to-grid', function(){
+      return register;
+    });
+  }
+
+  if( typeof cytoscape !== 'undefined' ){ // expose to global cytoscape (i.e. window.cytoscape)
+    register( cytoscape );
+  }
+
+})( typeof jQuery !== 'undefined' ? jQuery : null );

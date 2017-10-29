@@ -1,4 +1,7 @@
-class ProgressInfo {
+import * as Events from "./events"
+import * as Model from "../shared/model"
+
+export class ProgressInfo {
 	public readonly progress: number;
 	public readonly activeWorkers: number;
 
@@ -8,7 +11,7 @@ class ProgressInfo {
 	}
 }
 
-class WorkerThread extends Events {
+class WorkerThread extends Events.Events {
 	private worker: Worker;
 	private readonly numWorkers: number;
 	private readonly thisWorkerNumber: number;	
@@ -20,7 +23,7 @@ class WorkerThread extends Events {
 
 		this.numWorkers = numWorkers;
 		this.thisWorkerNumber = thisWorkerNumber;
-		this.worker = new Worker("js/simworker.js");
+		this.worker = new Worker("js/worker/loader.js");
 		$(this.worker).on("message", this.onMessage.bind(this));
 	}
 
@@ -60,7 +63,7 @@ class WorkerThread extends Events {
 	}
 }
 
-class SimHandler extends Events {
+export class SimHandler extends Events.Events {
 	private workers: WorkerThread[] = [];
 	private numWorkers: number;
 	private started: boolean = false;

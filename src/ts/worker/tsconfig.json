@@ -1,0 +1,8 @@
+{
+	"extends": "../shared/tsconfig.json",
+	"compilerOptions": {
+		"lib": [ "WebWorker", "ES6" ],
+		"types": [ "compat" ],
+	},
+	"files": [ "main.ts" ]
+}

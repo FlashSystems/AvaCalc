@@ -18,19 +18,21 @@
   "author": "Daniel Goß",
   "license": "GPL-3.0",
   "devDependencies": {
-    "@types/jquery": "^3.2.12",
-    "@types/materialize-css": "^0.100.0",
-    "cytoscape": "^3.2.4",
+    "@types/jquery": "^3.2.17",
+    "@types/materialize-css": "^0.100.3",
+    "cytoscape": "^3.2.7",
     "gulp": "^3.9.1",
     "gulp-noop": "^1.0.0",
-    "gulp-typescript": "^3.2.2",
+    "gulp-typescript": "^3.2.3",
     "gulp-uglify": "^3.0.0",
     "jquery": "^3.2.1",
     "materialize-css": "^0.100.2",
-    "mdi": "^2.0.46",
-    "typescript": "^2.5.2"
+    "mdi": "^2.1.19",
+    "requirejs": "^2.3.5",
+    "typescript": "^2.6.2"
   },
   "dependencies": {
-    "gulp-sourcemaps": "^2.6.1"
+    "gulp-sourcemaps": "^2.6.1",
+    "ts-serializer": "^1.0.1"
   }
 }
