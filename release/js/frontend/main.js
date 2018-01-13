@@ -1,0 +1,1 @@
+define(["require","exports","./gui"],function(e,n,i){"use strict";Object.defineProperty(n,"__esModule",{value:!0}),$(document).ready(function(){new i.Main})});

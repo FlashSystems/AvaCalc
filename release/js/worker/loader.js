@@ -1,0 +1,1 @@
+importScripts("../require.js"),require(["main"]);
